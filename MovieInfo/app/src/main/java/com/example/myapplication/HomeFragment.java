@@ -24,12 +24,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 import static android.content.ContentValues.TAG;
 
 
 public class HomeFragment extends Fragment {
-
+    public static ArrayList<Movie> popularMovieArrayList=new ArrayList<Movie>();
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -55,35 +56,38 @@ public class HomeFragment extends Fragment {
 
 
 
-    public static void parseJSON(JSONObject jsonObject){
+    public static void parseJSONPopularMovies(JSONObject jsonObject){
 
         try {
 
             System.out.println("ASDFASDASDFSADF");
             System.out.println(jsonObject);
             JSONArray resArray = jsonObject.getJSONArray("results"); //Getting the results object
-            for (int i = 0; i < resArray.length(); i++) {
+            for (int i = 0; i < resArray.length()-1; i++) {
                 JSONObject jsonObject1 = resArray.getJSONObject(i);
-                System.out.println(jsonObject1.get("title"));
-//                    Movie movie = new Movie(); //New Movie object
-//                movie.setId(jsonObject.getInt("id"));
-//                movie.setVoteAverage(jsonObject.getInt("vote_average"));
-//                movie.setVoteCount(jsonObject.getInt("vote_count"));
-//                movie.setOriginalTitle(jsonObject.getString("original_title"));
-//                movie.setTitle(jsonObject.getString("title"));
-//                movie.setPopularity(jsonObject.getDouble("popularity"));
-//                movie.setBackdropPath(jsonObject.getString("backdrop_path"));
-//                movie.setOverview(jsonObject.getString("overview"));
-//                movie.setReleaseDate(jsonObject.getString("release_date"));
-//                movie.setPosterPath(jsonObject.getString("poster_path"));
-                //Adding a new movie object into ArrayList
-//                    list.add(movie);
+                if(jsonObject1!=null) {
+
+                    Movie movie = new Movie(); //New Movie object
+                    movie.setVoteAverage(jsonObject1.getInt("vote_average"));
+                    movie.setOverview(jsonObject1.getString("overview"));
+                    movie.setTitle(jsonObject1.getString("title"));
+                    movie.setPopularity(jsonObject1.getDouble("popularity"));
+                    movie.setReleaseDate(jsonObject1.getString("release_date"));
+                    popularMovieArrayList.add(movie);
+                }
 
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
             Log.e(TAG, "Erro occurred during JSON Parsing", e);
+        }
+        System.out.println(popularMovieArrayList);
+        for(Movie a: popularMovieArrayList){
+            System.out.println(a.getTitle());
+            System.out.println(a.getOverview());
+            System.out.println(a.getReleaseDate());
+
         }
 
     }
@@ -111,26 +115,7 @@ public class HomeFragment extends Fragment {
                 e.printStackTrace();
             }
             try {
-//                System.out.println("HIHIIHIHIHI");
-//
-//                String json = "";
-//                String line;
-//
-//                URL url = new URL(popularMoviesURL);
-//
-//                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-//                while ((line = in.readLine()) != null) {
-//                    System.out.println("JSON LINE " + line);
-//                    json += line;
-//                }
-//
-//                System.out.println(json);
-//                in.close();
-//
-//                JSONObject jsonObject = new JSONObject(json);
-//                return jsonObject;
 
-                System.out.println(popularMoviesURL+" THIS IS TI!!!!!!!!!");
                 urlConn = url.openConnection();
                 bufferedReader = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 
@@ -162,7 +147,7 @@ public class HomeFragment extends Fragment {
             }
             System.out.println ("HIHHIIH");
             System.out.println(jsonObject);
-            parseJSON(jsonObject);
+            parseJSONPopularMovies(jsonObject);
 
 
 
@@ -175,27 +160,6 @@ public class HomeFragment extends Fragment {
         // from the JSON object. I parsed through the object to grab the meta data.
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-
-            //
-//                System.out.println("ASDFASDASDFSADF");
-//                System.out.println(jsonObject);
-//                JSONArray resArray = jsonObject.getJSONArray("results"); //Getting the results object
-//                for (int i = 0; i < resArray.length(); i++) {
-//                    JSONObject jsonObject1 = resArray.getJSONObject(i);
-//                    System.out.println(jsonObject1.get("title"));
-//                    Movie movie = new Movie(); //New Movie object
-//                movie.setId(jsonObject.getInt("id"));
-//                movie.setVoteAverage(jsonObject.getInt("vote_average"));
-//                movie.setVoteCount(jsonObject.getInt("vote_count"));
-//                movie.setOriginalTitle(jsonObject.getString("original_title"));
-//                movie.setTitle(jsonObject.getString("title"));
-//                movie.setPopularity(jsonObject.getDouble("popularity"));
-//                movie.setBackdropPath(jsonObject.getString("backdrop_path"));
-//                movie.setOverview(jsonObject.getString("overview"));
-//                movie.setReleaseDate(jsonObject.getString("release_date"));
-//                movie.setPosterPath(jsonObject.getString("poster_path"));
-            //Adding a new movie object into ArrayList
-//                    list.add(movie);
             System.out.println("end");
 
 
