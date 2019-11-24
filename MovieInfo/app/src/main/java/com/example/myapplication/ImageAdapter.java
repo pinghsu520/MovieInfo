@@ -19,17 +19,16 @@ import java.util.ArrayList;
 public class ImageAdapter extends PagerAdapter {
 
     private Context mContext;
-    private int[] images = new int[] {R.drawable.endgame_poster, R.drawable.star_wars_poster, R.drawable.joker_poster, R.drawable.aladdin_poster};
-    private ArrayList<String> posters;
+    private ArrayList<Bitmap> images;
 
-    public ImageAdapter(Context context, ArrayList<String> urls){
+    public ImageAdapter(Context context, ArrayList<Bitmap> images){
         this.mContext = context;
-        posters = urls;
+        this.images = images;
     }
 
     @Override
     public int getCount() {
-        return images.length;
+        return images.size();
     }
 
     @Override
@@ -39,12 +38,10 @@ public class ImageAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        System.out.println(position);
-        System.out.println(posters.size());
         ImageView image = new ImageView(mContext);
         image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        Bitmap bitmap = getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + posters.get(position));
-        image.setImageBitmap(bitmap);
+        //Bitmap bitmap = getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + images.get(position));
+        image.setImageBitmap(images.get(position));
         container.addView(image, 0);
         return image;
     }

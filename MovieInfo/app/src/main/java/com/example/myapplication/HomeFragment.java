@@ -204,8 +204,11 @@ public class HomeFragment extends Fragment {
         // from the JSON object. I parsed through the object to grab the meta data.
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            System.out.println("end");
-            updatePosters();
+            ViewPager view = myView.findViewById(R.id.newMovies);
+            Context context = myView.getContext();
+            ImageAdapter imageAdapter = new ImageAdapter(context ,posters);
+            view.setAdapter(imageAdapter);
+            //updatePosters();
 
         }
 
@@ -219,6 +222,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /*
     // This method takes all poster bitmaps from the array list and updates the UI
     private void updatePosters(){
         for (int i=0; i<posters.size(); i++){
@@ -230,6 +234,7 @@ public class HomeFragment extends Fragment {
         }
 
     }
+     */
 
     // Used to download poster images
     public static Bitmap getBitmapFromURL(String src) {
