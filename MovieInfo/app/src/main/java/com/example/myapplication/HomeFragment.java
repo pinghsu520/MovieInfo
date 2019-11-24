@@ -70,11 +70,12 @@ public class HomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         myView =  inflater.inflate(R.layout.fragment_home, container, false);
+        /*
         ViewPager view = myView.findViewById(R.id.newMovies);
         Context context = view.getContext();
         ImageAdapter imageAdapter = new ImageAdapter(context);
         view.setAdapter(imageAdapter);
-
+         */
         pageView = myView;
         new DownloadTask().execute();
 
