@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -31,6 +38,13 @@ import static android.content.ContentValues.TAG;
 
 public class HomeFragment extends Fragment {
     public static ArrayList<Movie> popularMovieArrayList=new ArrayList<Movie>();
+
+    // These two arrays are for the poster urls and the poster bitmaps
+    public static ArrayList<String> posterUrls = new ArrayList<String>();
+    public static ArrayList<Bitmap> posters = new ArrayList<Bitmap>();
+    // used to refernce the view when updating the UI with bitmaps
+    static View pageView;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -43,13 +57,16 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View myView =  inflater.inflate(R.layout.fragment_home, container, false);
-        ViewPager view = myView.findViewById(R.id.newMovies);
-        Context context = view.getContext();
-        ImageAdapter imageAdapter = new ImageAdapter(context);
-        view.setAdapter(imageAdapter);
+        pageView = myView;
         new DownloadTask().execute();
+
+        //ViewPager view = myView.findViewById(R.id.newMovies);
+        //Context context = view.getContext();
+        //ImageAdapter imageAdapter = new ImageAdapter(context, posterUrls);
+        //view.setAdapter(imageAdapter);
 
         return myView;
     }
@@ -67,6 +84,9 @@ public class HomeFragment extends Fragment {
                 JSONObject jsonObject1 = resArray.getJSONObject(i);
                 if(jsonObject1!=null) {
 
+                    String posterUrl = jsonObject1.getString("poster_path");
+                    posterUrls.add(posterUrl);
+
                     Movie movie = new Movie(); //New Movie object
                     movie.setVoteAverage(jsonObject1.getInt("vote_average"));
                     movie.setOverview(jsonObject1.getString("overview"));
@@ -75,7 +95,6 @@ public class HomeFragment extends Fragment {
                     movie.setReleaseDate(jsonObject1.getString("release_date"));
                     popularMovieArrayList.add(movie);
                 }
-
 
             }
         } catch (JSONException e) {
@@ -89,6 +108,8 @@ public class HomeFragment extends Fragment {
             System.out.println(a.getReleaseDate());
 
         }
+        System.out.println("poster urls");
+        System.out.println(posterUrls);
 
     }
 
@@ -148,6 +169,7 @@ public class HomeFragment extends Fragment {
             System.out.println ("HIHHIIH");
             System.out.println(jsonObject);
             parseJSONPopularMovies(jsonObject);
+            downloadMoviePosters();
 
 
 
@@ -161,11 +183,50 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
             System.out.println("end");
-
+            updatePosters();
 
         }
 
     }
+
+    // This method uses the poster urls to download all poster bitmaps and then adds them to a list
+    private void downloadMoviePosters(){
+        for (int i = 0; i < posterUrls.size(); i++){
+            Bitmap bitmap = getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + posterUrls.get(i));
+            posters.add(bitmap);
+        }
+    }
+
+    // This method takes all poster bitmaps from the array list and updates the UI
+    private void updatePosters(){
+        for (int i=0; i<posters.size(); i++){
+            ImageView image = new ImageView(pageView.getContext());
+            Bitmap bitmap = posters.get(i);
+            image.setImageBitmap(bitmap);
+            LinearLayout movies = pageView.findViewById(R.id.movies);
+            movies.addView(image);
+        }
+
+    }
+
+    // Used to download poster images
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
 
 
 }
