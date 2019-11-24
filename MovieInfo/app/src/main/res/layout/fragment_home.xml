@@ -37,6 +37,7 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:text="Search"
+                android:onClick="onSearchClicked"
                 android:layout_weight="1"
                 />
         </LinearLayout>

@@ -8,16 +8,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.widget.EditText;
+
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +42,9 @@ import java.util.ArrayList;
 import static android.content.ContentValues.TAG;
 
 
+
 public class HomeFragment extends Fragment {
+    private View myView;
     public static ArrayList<Movie> popularMovieArrayList=new ArrayList<Movie>();
 
     // These two arrays are for the poster urls and the poster bitmaps
@@ -61,7 +69,12 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View myView =  inflater.inflate(R.layout.fragment_home, container, false);
+        myView =  inflater.inflate(R.layout.fragment_home, container, false);
+        ViewPager view = myView.findViewById(R.id.newMovies);
+        Context context = view.getContext();
+        ImageAdapter imageAdapter = new ImageAdapter(context);
+        view.setAdapter(imageAdapter);
+
         pageView = myView;
         new DownloadTask().execute();
 
@@ -74,13 +87,29 @@ public class HomeFragment extends Fragment {
     }
 
 
+    public void onSearchPressed(FragmentManager manager, SearchFragment search){
+        EditText searchText = (EditText) myView.findViewById(R.id.searchText);
+        String query = searchText.getText().toString();
+
+
+
+        Bundle bundle = new Bundle();
+        bundle.putString("search", query);
+
+        search.setArguments(bundle);
+
+        FragmentTransaction fTransaction = manager.beginTransaction();
+        //adding it so that it will show
+        fTransaction.replace(R.id.main_layout, search).addToBackStack(null);
+        fTransaction.commit();
+    }
+
+
+
 
     public static void parseJSONPopularMovies(JSONObject jsonObject){
 
         try {
-
-            System.out.println("ASDFASDASDFSADF");
-            System.out.println(jsonObject);
             JSONArray resArray = jsonObject.getJSONArray("results"); //Getting the results object
             for (int i = 0; i < resArray.length()-1; i++) {
                 JSONObject jsonObject1 = resArray.getJSONObject(i);
@@ -103,16 +132,16 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
             Log.e(TAG, "Erro occurred during JSON Parsing", e);
         }
-        System.out.println(popularMovieArrayList);
+        /*
         for(Movie a: popularMovieArrayList){
             System.out.println(a.getTitle());
             System.out.println(a.getOverview());
             System.out.println(a.getReleaseDate());
 
         }
+         */
         System.out.println("poster urls");
         System.out.println(posterUrls);
-
     }
 
     //http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=f3de492aa94182ea8b782ec30b1d6453
@@ -151,16 +180,11 @@ public class HomeFragment extends Fragment {
 //                return jsonObject;
 
 
-            }
-            catch(Exception ex)
-            {
+            } catch (Exception ex) {
                 Log.e("App", "yourDataTask", ex);
                 return null;
-            }
-            finally
-            {
-                if(bufferedReader != null)
-                {
+            } finally {
+                if (bufferedReader != null) {
                     try {
                         bufferedReader.close();
                     } catch (IOException e) {
@@ -168,17 +192,12 @@ public class HomeFragment extends Fragment {
                     }
                 }
             }
-            System.out.println ("HIHHIIH");
-            System.out.println(jsonObject);
             parseJSONPopularMovies(jsonObject);
             downloadMoviePosters();
 
 
-
-
             return null;
         }
-
 
         // The purpose of this function is to call and execute that grabs the information needed
         // from the JSON object. I parsed through the object to grab the meta data.
