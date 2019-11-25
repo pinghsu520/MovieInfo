@@ -14,16 +14,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class ImageAdapter extends PagerAdapter {
 
     private Context mContext;
     private ArrayList<Bitmap> images;
 
-    public ImageAdapter(Context context, ArrayList<Bitmap> images){
+
+    public ImageAdapter(Context context, ArrayList<Bitmap> images, ArrayList<Movie> films){
         this.mContext = context;
         this.images = images;
+
     }
 
     @Override
@@ -37,10 +42,17 @@ public class ImageAdapter extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(ViewGroup container, final int position) {
         ImageView image = new ImageView(mContext);
+        image.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view){
+                ((MainActivity)mContext).onMovieClicked(view, position);
+            }
+
+        });
         image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        //Bitmap bitmap = getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + images.get(position));
         image.setImageBitmap(images.get(position));
         container.addView(image, 0);
         return image;
@@ -50,19 +62,5 @@ public class ImageAdapter extends PagerAdapter {
         container.removeView((ImageView) object);
     }
 
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
 }

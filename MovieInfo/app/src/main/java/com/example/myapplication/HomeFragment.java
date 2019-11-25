@@ -70,19 +70,10 @@ public class HomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         myView =  inflater.inflate(R.layout.fragment_home, container, false);
-        /*
-        ViewPager view = myView.findViewById(R.id.newMovies);
-        Context context = view.getContext();
-        ImageAdapter imageAdapter = new ImageAdapter(context);
-        view.setAdapter(imageAdapter);
-         */
+
         pageView = myView;
         new DownloadTask().execute();
 
-        //ViewPager view = myView.findViewById(R.id.newMovies);
-        //Context context = view.getContext();
-        //ImageAdapter imageAdapter = new ImageAdapter(context, posterUrls);
-        //view.setAdapter(imageAdapter);
 
         return myView;
     }
@@ -102,6 +93,15 @@ public class HomeFragment extends Fragment {
         FragmentTransaction fTransaction = manager.beginTransaction();
         //adding it so that it will show
         fTransaction.replace(R.id.main_layout, search).addToBackStack(null);
+        fTransaction.commit();
+    }
+
+    public void onMoviePressed(FragmentManager manager, MovieFragment movie, int position){
+        Bundle bundle = new Bundle();
+        bundle.putInt("position", position);
+        movie.setArguments(bundle);
+        FragmentTransaction fTransaction = manager.beginTransaction();
+        fTransaction.replace(R.id.main_layout, movie).addToBackStack(null);
         fTransaction.commit();
     }
 
@@ -206,7 +206,7 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(JSONObject jsonObject) {
             ViewPager view = myView.findViewById(R.id.newMovies);
             Context context = myView.getContext();
-            ImageAdapter imageAdapter = new ImageAdapter(context ,posters);
+            ImageAdapter imageAdapter = new ImageAdapter(context ,posters, popularMovieArrayList);
             view.setAdapter(imageAdapter);
             //updatePosters();
 
