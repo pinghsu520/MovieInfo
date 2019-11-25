@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager manager;
     private SearchFragment search;
     private HomeFragment home;
+    private MovieFragment movie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         //my fragments that i will use
         home =  new HomeFragment();
         search = new SearchFragment();
+        movie = new MovieFragment();
 
         manager = this.getSupportFragmentManager();
 
@@ -34,4 +36,9 @@ public class MainActivity extends AppCompatActivity {
     public void onSearchClicked(View v){
         home.onSearchPressed(manager, search);
     }
+
+    public void onMovieClicked(View v, int moviePosition){
+        home.onMoviePressed(manager, movie, moviePosition);
+    }
+
 }
