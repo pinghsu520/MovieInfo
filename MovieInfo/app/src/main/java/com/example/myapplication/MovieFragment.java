@@ -36,6 +36,12 @@ public class MovieFragment extends Fragment {
         System.out.println(movie.getOverview());
         System.out.println(movie.getTitle());
 
+
+//        String url_image=UTL OF THE MOVIE??
+//        System.out.println(url_image);
+//        Intent browserIntent=new Intent(Intent.ACTION_VIEW,  Uri.parse(url_image));
+//        startActivity(browserIntent);
+
         return myView;
     }
 
