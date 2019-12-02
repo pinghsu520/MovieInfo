@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import android.graphics.Bitmap;
+
 public class Movie {
 
 
@@ -8,6 +10,7 @@ public class Movie {
     private String releaseDate;
     private String overview;
     private  int voteAverage;
+    private Bitmap poster;
 
 
     public String getTitle() {
@@ -33,6 +36,14 @@ public class Movie {
 
     public void setPopularity(double popularity) {
         this.popularity = popularity;
+    }
+
+    public void setPoster(Bitmap image){
+        poster = image;
+    }
+
+    public Bitmap getPoster(){
+        return poster;
     }
 
 

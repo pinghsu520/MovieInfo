@@ -99,11 +99,13 @@ public class HomeFragment extends Fragment {
     public void onMoviePressed(FragmentManager manager, MovieFragment movie, int position){
         Bundle bundle = new Bundle();
         bundle.putInt("position", position);
+        popularMovieArrayList.get(position).setPoster(posters.get(position));
         movie.setArguments(bundle);
         FragmentTransaction fTransaction = manager.beginTransaction();
         fTransaction.replace(R.id.main_layout, movie).addToBackStack(null);
         fTransaction.commit();
     }
+
 
 
 

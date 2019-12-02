@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     private SearchFragment search;
     private HomeFragment home;
     private MovieFragment movie;
+    private ContactFragment contacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
         home =  new HomeFragment();
         search = new SearchFragment();
         movie = new MovieFragment();
+        contacts = new ContactFragment();
+        contacts.setContainerActivity(this);
 
         manager = this.getSupportFragmentManager();
 
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onMovieClicked(View v, int moviePosition){
         home.onMoviePressed(manager, movie, moviePosition);
+    }
+
+    public void onContactClicked(View v){
+        movie.onShare(manager, contacts);
     }
 
 }
