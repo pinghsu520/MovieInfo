@@ -98,8 +98,11 @@ public class HomeFragment extends Fragment {
 
     public void onMoviePressed(FragmentManager manager, MovieFragment movie, int position){
         Bundle bundle = new Bundle();
-        bundle.putInt("position", position);
-        popularMovieArrayList.get(position).setPoster(posters.get(position));
+        Movie newMovie = popularMovieArrayList.get(position);
+
+        bundle.putString("id", newMovie.getId());
+
+        //popularMovieArrayList.get(position).setPoster(posters.get(position));
         movie.setArguments(bundle);
         FragmentTransaction fTransaction = manager.beginTransaction();
         fTransaction.replace(R.id.main_layout, movie).addToBackStack(null);
@@ -127,6 +130,8 @@ public class HomeFragment extends Fragment {
                     movie.setTitle(jsonObject1.getString("title"));
                     movie.setPopularity(jsonObject1.getDouble("popularity"));
                     movie.setReleaseDate(jsonObject1.getString("release_date"));
+                    Integer movieId = jsonObject1.getInt("id");
+                    movie.setId(movieId.toString());
                     popularMovieArrayList.add(movie);
                 }
 
