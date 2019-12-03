@@ -9,10 +9,10 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FragmentManager manager;
+    public static FragmentManager manager;
     private SearchFragment search;
     private HomeFragment home;
-    private MovieFragment movie;
+    public static MovieFragment movie;
     private ContactFragment contacts;
 
     @Override

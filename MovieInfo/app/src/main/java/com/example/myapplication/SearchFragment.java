@@ -56,7 +56,9 @@ public class SearchFragment extends Fragment {
         Bundle bundle = getArguments();
         searchQuery = bundle.getString("search");
         movies = new HashMap<>();
+        this.manager = MainActivity.manager;
         new DownloadTask().execute();
+
         return myView;
     }
 
@@ -143,6 +145,22 @@ public class SearchFragment extends Fragment {
 
                         //getting the jsonobject
                         JSONObject clicked = movies.get(arrayList.get(i).get("title"));
+                        Bundle bundle = new Bundle();
+                        Integer movieId = 0;
+                        try{
+                            movieId = clicked.getInt("id");
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        bundle.putString("id", movieId.toString());
+
+                        MovieFragment movieFrag = MainActivity.movie;
+                        movieFrag.setArguments(bundle);
+                        //starting the new fragment
+                        FragmentTransaction newTransaction =  manager.beginTransaction();
+                        newTransaction.replace(R.id.main_layout, movieFrag).addToBackStack(null);
+                        newTransaction.commit();
                         /*
                         Bundle bundle = new Bundle();
                         //putting the json object as an extra value

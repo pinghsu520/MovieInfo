@@ -11,7 +11,12 @@ public class Movie {
     private String overview;
     private  int voteAverage;
     private Bitmap poster;
+    private String id;
 
+
+    public String getId(){return id;}
+
+    public void setId(String newId) {this.id = newId;}
 
     public String getTitle() {
         return title;
