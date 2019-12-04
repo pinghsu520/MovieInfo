@@ -1,11 +1,14 @@
 package com.example.myapplication;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,6 +23,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -27,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +54,8 @@ public class MovieFragment extends Fragment {
     private View myView;
 
     private String searchUrl = "";
-
+    String videoUrl="";
+    String FinalVideoURL="";
     public MovieFragment() {
         // Required empty public constructor
     }
@@ -63,10 +69,40 @@ public class MovieFragment extends Fragment {
         String id = bundle.getString("id");
 
         searchUrl = "https://api.themoviedb.org/3/movie/" + id + "?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
+        videoUrl = "https://api.themoviedb.org/3/movie/" + id + "/videos?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
+        System.out.println("HI PING!!!!!!!! "+searchUrl);
+        System.out.println("HI PING!!!!!!!! "+videoUrl);
 
         new DownloadTask().execute();
         return myView;
     }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ImageView view = (ImageView) myView.findViewById(R.id.poster);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(FinalVideoURL));
+                getActivity().startActivity(i);
+
+            }
+        });
+
+    }
+
+//    public void ClickImage(View myView){
+//        // First image
+//        if(myView.getId()==R.id.poster){
+//            System.out.println(FinalVideoURL);
+//            Intent browserIntent=new Intent(Intent.ACTION_VIEW,  Uri.parse(FinalVideoURL));
+//            startActivity(browserIntent);
+//        }
+//
+//    }
 
     public void onShare(FragmentManager manager, ContactFragment contact){
         Bundle bundle = new Bundle();
@@ -78,6 +114,33 @@ public class MovieFragment extends Fragment {
         fTransaction.commit();
     }
 
+    public void createJson(String url) throws IOException, JSONException {
+        String json = "";
+        //getting the proper url
+        URL url1 = new URL(url);
+
+        String line;
+        //reading the json
+        BufferedReader in = new BufferedReader(new InputStreamReader(url1.openStream()));
+        while ((line = in.readLine()) != null) {
+            json += line;
+        }
+        in.close();
+        System.out.println(json);
+        //creating the jsonObject
+        JSONObject jsonObject1 = new JSONObject(json);
+        System.out.println("TESTETSTSETST");
+        JSONArray a=(jsonObject1.getJSONArray("results"));
+        if(a.length()>2) {
+            JSONObject b = (JSONObject) a.get(1);
+            System.out.println(b);
+            String videoID = (b.getString("key"));
+            FinalVideoURL = "https://www.youtube.com/watch?v=" + videoID;
+            System.out.println(FinalVideoURL);
+        }
+
+    }
+
     /*
 This is the async task that actually downloads the flikr images.
 It does this by parsing JSON from the flikr API.
@@ -87,7 +150,7 @@ It does this by parsing JSON from the flikr API.
         @Override
         protected JSONObject doInBackground(Object[] objects) {
             try {
-
+                createJson(videoUrl);
                 movie = new Movie(); //New Movie object
 
                 String json = "";
@@ -101,7 +164,7 @@ It does this by parsing JSON from the flikr API.
                     json += line;
                 }
                 in.close();
-
+                System.out.println(json);
                 //creating the jsonObject
                 JSONObject jsonObject = new JSONObject(json);
 
@@ -116,6 +179,7 @@ It does this by parsing JSON from the flikr API.
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
+
             //getting the approptiate information from the json
             try {
 
@@ -157,6 +221,7 @@ It does this by parsing JSON from the flikr API.
             }
         }
     }
+
 
 
         /*
