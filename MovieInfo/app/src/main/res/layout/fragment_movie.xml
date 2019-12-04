@@ -151,4 +151,16 @@
         app:layout_constraintStart_toStartOf="@+id/guideline8"
         app:layout_constraintTop_toTopOf="@+id/guideline10"
         android:onClick="onContactClicked"/>
+
+
+    <Button
+        android:id="@+id/browserOpen"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+
+        android:text="Enter Website!"
+
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

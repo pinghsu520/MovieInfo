@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -53,7 +54,9 @@ public class MovieFragment extends Fragment {
 
     private View myView;
 
+    Button browser;
     private String searchUrl = "";
+    String OpenBrowserUrl="";
     String videoUrl="";
     String FinalVideoURL="";
     public MovieFragment() {
@@ -68,6 +71,8 @@ public class MovieFragment extends Fragment {
         Bundle bundle = getArguments();
         String id = bundle.getString("id");
 
+        OpenBrowserUrl="https://www.themoviedb.org/movie/"+id;
+        System.out.println("THIS IS THE browser URL PING! "+OpenBrowserUrl);
         searchUrl = "https://api.themoviedb.org/3/movie/" + id + "?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
         videoUrl = "https://api.themoviedb.org/3/movie/" + id + "/videos?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
         System.out.println("HI PING!!!!!!!! "+searchUrl);
@@ -92,17 +97,22 @@ public class MovieFragment extends Fragment {
             }
         });
 
+
+        Button button = (Button) myView.findViewById(R.id.browserOpen);
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(OpenBrowserUrl));
+                getActivity().startActivity(i);
+            }
+        });
+
     }
 
-//    public void ClickImage(View myView){
-//        // First image
-//        if(myView.getId()==R.id.poster){
-//            System.out.println(FinalVideoURL);
-//            Intent browserIntent=new Intent(Intent.ACTION_VIEW,  Uri.parse(FinalVideoURL));
-//            startActivity(browserIntent);
-//        }
-//
-//    }
+
 
     public void onShare(FragmentManager manager, ContactFragment contact){
         Bundle bundle = new Bundle();
@@ -223,39 +233,4 @@ It does this by parsing JSON from the flikr API.
     }
 
 
-
-        /*
-        // Inflate the layout for this fragment
-        View myView =  inflater.inflate(R.layout.fragment_movie, container, false);
-        Bundle bundle = getArguments();
-        int position = bundle.getInt("position");
-        movie = popularMovieArrayList.get(position);
-
-        image = myView.findViewById(R.id.poster);
-        title = myView.findViewById(R.id.title);
-        popularity = myView.findViewById(R.id.popularity);
-        release = myView.findViewById(R.id.release);
-        overview = myView.findViewById(R.id.overview);
-
-        image.setImageBitmap(movie.getPoster());
-        title.setText(movie.getTitle());
-        popularity.setText(Double.toString(movie.getPopularity()));
-        release.setText(movie.getReleaseDate());
-        overview.setText(movie.getOverview());
-
-
-        System.out.println(movie.getOverview());
-        System.out.println(movie.getTitle());
-
-
-//        String url_image=UTL OF THE MOVIE??
-//        System.out.println(url_image);
-//        Intent browserIntent=new Intent(Intent.ACTION_VIEW,  Uri.parse(url_image));
-//        startActivity(browserIntent);
-
-        return myView;
-    }
-
-
-    */
 }
