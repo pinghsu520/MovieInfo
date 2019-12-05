@@ -189,7 +189,7 @@ It does this by parsing JSON from the flikr API.
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-
+            myView.findViewById(R.id.progressBar).setVisibility(View.GONE);
             //getting the approptiate information from the json
             try {
 
