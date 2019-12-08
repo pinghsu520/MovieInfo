@@ -66,6 +66,7 @@ public class ReviewFragment extends Fragment {
         userRev.setText("");
     }
 
+    // writing to file
     private void writeToFile(String data) {
 
         String prev = readFromFile();
