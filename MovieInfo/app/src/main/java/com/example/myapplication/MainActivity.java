@@ -11,9 +11,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static FragmentManager manager;
     private SearchFragment search;
-    private HomeFragment home;
+    public static HomeFragment home;
     public static MovieFragment movie;
     private ContactFragment contacts;
+    private ReviewFragment reviews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         search = new SearchFragment();
         movie = new MovieFragment();
         contacts = new ContactFragment();
+        reviews = new ReviewFragment();
         contacts.setContainerActivity(this);
 
         manager = this.getSupportFragmentManager();
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fTransaction = manager.beginTransaction();
 
         //adding it so that it will show
-        fTransaction.add(R.id.main_layout, home).addToBackStack(null);
+        fTransaction.add(R.id.main_layout, home);
         fTransaction.commit();
     }
 
@@ -42,6 +44,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void onMovieClicked(View v, int moviePosition){
         home.onMoviePressed(manager, movie, moviePosition);
+    }
+
+    public void onReview(View v){
+        movie.onRate(manager, reviews);
+    }
+
+    public void newReview(View v){
+
+    }
+
+    public void onPostReview(View v){
+        reviews.onPost();
     }
 
     public void onContactClicked(View v){

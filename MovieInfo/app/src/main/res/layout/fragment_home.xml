@@ -50,6 +50,13 @@
             android:layout_weight="6"
             />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:text="Your Reviews."
+            android:gravity="center_horizontal"
+            />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -57,47 +64,13 @@
             android:layout_margin="10dp"
             >
             <LinearLayout
+                android:id="@+id/reviewholder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 >
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:text="Your Reviews."
-                    android:gravity="center_horizontal"
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:text="incididunt ut labore et dolore magna aliqua. "
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:text="Gravida arcu ac tortor dignissim convallis. Platea dictumst quisque sagittis purus sit amet volutpat consequat."
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:text="Gravida arcu ac tortor dignissim convallis. Platea dictumst quisque sagittis purus sit amet volutpat consequat."
-                    />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:text="Gravida arcu ac tortor dignissim convallis. Platea dictumst quisque sagittis purus sit amet volutpat consequat."
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:text="Gravida arcu ac tortor dignissim convallis. Platea dictumst quisque sagittis purus sit amet volutpat consequat."
-                    />
+
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

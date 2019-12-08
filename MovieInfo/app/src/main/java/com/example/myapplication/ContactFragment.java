@@ -34,6 +34,7 @@ public class ContactFragment extends Fragment {
     String email;
     String overview;
     String title;
+    private boolean populated = false;
 
     public ContactFragment() { }
 
@@ -70,41 +71,46 @@ public class ContactFragment extends Fragment {
     // the image with a specific contact
     public void onResume() {
         super.onResume();
-        setupContactsAdapter(); // populating list view
 
-        // defining on click for each contact in the adapter
-        contactList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3){
-                // creating bundle and launching next fragment
+        if (!populated){
+            setupContactsAdapter(); // populating list view
 
-                // getting the email for a contact
-                String contactId = Integer.toString(position + 1);
-                System.out.println(contactId);
-                Cursor emails = getActivity().getContentResolver().query(
-                        ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-                        ContactsContract.CommonDataKinds.Email.CONTACT_ID +
-                                " = " + contactId, null, null);
-                if (emails.moveToNext()) {
-                    email = emails.getString(emails.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+            // defining on click for each contact in the adapter
+            contactList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3){
+                    // creating bundle and launching next fragment
+
+                    // getting the email for a contact
+                    String contactId = Integer.toString(position + 1);
+                    System.out.println(contactId);
+                    Cursor emails = getActivity().getContentResolver().query(
+                            ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                            ContactsContract.CommonDataKinds.Email.CONTACT_ID +
+                                    " = " + contactId, null, null);
+                    if (emails.moveToNext()) {
+                        email = emails.getString(emails.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+
+                    }
+                    emails.close();
+                    // creating intent to start email activity
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("vnd.android.cursor.dir/email");
+                    intent.putExtra(Intent.EXTRA_EMAIL, new String[] {email});
+                    intent.putExtra(Intent.EXTRA_TEXT, overview);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Check out: " + title);
+                    startActivity(intent);
 
                 }
-                emails.close();
-                // creating intent to start email activity
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("vnd.android.cursor.dir/email");
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[] {email});
-                intent.putExtra(Intent.EXTRA_TEXT, overview);
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Check out: " + title);
-                startActivity(intent);
 
-            }
+            });
+        }
 
-        });
     }
     // This method updates a list of contacts with all contacts obtained through the
     // content provider
     public void getContacts() {
+        contacts.clear();
         Cursor cursor = containerActivity.getContentResolver().query(
                 ContactsContract.Contacts.CONTENT_URI,null, null, null, null);
         while (cursor.moveToNext()) {
@@ -114,6 +120,7 @@ public class ContactFragment extends Fragment {
             contacts.add(contact);
         }
         cursor.close();
+
     }
 
     // This method uses the list of contacts to update the contact list via adapter
