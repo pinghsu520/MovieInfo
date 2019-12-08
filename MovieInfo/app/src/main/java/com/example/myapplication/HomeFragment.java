@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 
 import org.json.JSONArray;
@@ -30,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,6 +47,7 @@ import static android.content.ContentValues.TAG;
 
 public class HomeFragment extends Fragment {
     private View myView;
+    Context context;
     public static ArrayList<Movie> popularMovieArrayList=new ArrayList<Movie>();
 
     // These two arrays are for the poster urls and the poster bitmaps
@@ -52,6 +55,8 @@ public class HomeFragment extends Fragment {
     public static ArrayList<Bitmap> posters = new ArrayList<Bitmap>();
     // used to refernce the view when updating the UI with bitmaps
     static View pageView;
+
+    public static ArrayList<String> reviews = new ArrayList<String>();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -70,13 +75,35 @@ public class HomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         myView =  inflater.inflate(R.layout.fragment_home, container, false);
-
+        context = myView.getContext();
         pageView = myView;
         new DownloadTask().execute();
+        populateReviews();
 
 
         return myView;
     }
+
+    public void populateReviews(){
+        String revs = readFromFile();
+        String[] userRevs = revs.split("--");
+        LinearLayout allRevs = myView.findViewById(R.id.reviewholder);
+        for (int i = 0; i < userRevs.length; i++){
+            TextView rev = new TextView(context);
+            rev.setText(userRevs[i]);
+            allRevs.addView(rev);
+
+        }
+    }
+
+    public void addReview(){
+        LinearLayout allRevs = myView.findViewById(R.id.reviewholder);
+        TextView rev = new TextView(context);
+        rev.setText(reviews.get(reviews.size() - 1));
+        allRevs.addView(rev);
+    }
+
+
 
 
     public void onSearchPressed(FragmentManager manager, SearchFragment search){
@@ -229,19 +256,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    /*
-    // This method takes all poster bitmaps from the array list and updates the UI
-    private void updatePosters(){
-        for (int i=0; i<posters.size(); i++){
-            ImageView image = new ImageView(pageView.getContext());
-            Bitmap bitmap = posters.get(i);
-            image.setImageBitmap(bitmap);
-            LinearLayout movies = pageView.findViewById(R.id.movies);
-            movies.addView(image);
-        }
-
-    }
-     */
 
     // Used to download poster images
     public static Bitmap getBitmapFromURL(String src) {
@@ -257,6 +271,38 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private String readFromFile() {
+
+        String ret = "";
+
+        try {
+            InputStream inputStream = context.openFileInput("reviews.txt");
+
+            if ( inputStream != null ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ( (receiveString = bufferedReader.readLine()) != null ) {
+                    if(receiveString != ""){
+                        stringBuilder.append(receiveString + "--");
+                    }
+                }
+
+                inputStream.close();
+                ret = stringBuilder.toString();
+            }
+        }
+        catch (FileNotFoundException e) {
+            Log.e("login activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("login activity", "Can not read file: " + e.toString());
+        }
+
+        return ret;
     }
 
 

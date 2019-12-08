@@ -124,6 +124,17 @@ public class MovieFragment extends Fragment {
         fTransaction.commit();
     }
 
+    public void onRate(FragmentManager manager, ReviewFragment reviews){
+        Bundle bundle = new Bundle();
+        bundle.putString("title", movie.getTitle());
+        bundle.putString("id", movie.getId());
+        reviews.setArguments(bundle);
+        FragmentTransaction fTransaction = manager.beginTransaction();
+        fTransaction.replace(R.id.main_layout, reviews).addToBackStack(null);
+        fTransaction.commit();
+
+    }
+
     public void createJson(String url) throws IOException, JSONException {
         String json = "";
         //getting the proper url
