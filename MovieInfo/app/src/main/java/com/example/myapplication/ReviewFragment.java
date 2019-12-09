@@ -1,3 +1,8 @@
+/*
+ * @author: Mario Verdugo. Ping Hsu, Nathon Smith
+ * @description: This is the review fragment. this is used to review a movie. a edittext and
+ * button are displayed
+ */
 package com.example.myapplication;
 
 
@@ -31,8 +36,8 @@ public class ReviewFragment extends Fragment {
 
     private String title;
     private String id;
-    EditText userRev;
-    Context context;
+    private EditText userRev;
+    private Context context;
 
 
     public ReviewFragment() {
@@ -46,6 +51,7 @@ public class ReviewFragment extends Fragment {
         // Inflate the layout for this fragment
         View myView =  inflater.inflate(R.layout.fragment_review, container, false);
 
+        //setting the onclick of the button
         Button button = myView.findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener()
         {
@@ -56,38 +62,49 @@ public class ReviewFragment extends Fragment {
             }
         });
 
+        //getting the title and id from the bundle
         context = myView.getContext();
         Bundle bundle = getArguments();
         title = bundle.getString("title");
         id = bundle.getString("id");
 
+        //getting the editetext
         userRev = myView.findViewById(R.id.userrev);
 
+        //getting the movietitle and setting it
         TextView movieTitle = myView.findViewById(R.id.title);
         movieTitle.setText(title);
         return myView;
     }
 
+    /**
+     * the onclick funciton that transitions to the original home fragment.
+     */
     public void onPost(){
-        System.out.println("i am here");
+        //getting the text of the review and writing it to the file.
         String review = userRev.getText().toString();
         writeToFile(review);
-        HomeFragment.reviews.add(review);
-        MainActivity.home.addReview();
-        String text = readFromFile();
+        //adding the review to the home fragment
+        MainActivity.home.addReview(review);
         userRev.setText("");
 
+        //switching fragments
         FragmentManager manager = MainActivity.manager;
         manager.beginTransaction().replace(R.id.main_layout, MainActivity.home).addToBackStack(null).commit();
 
     }
 
-    // writing to file
+    /**
+     * writing the new review to the file
+     * @param data the review.
+     */
     private void writeToFile(String data) {
 
-        String prev = readFromFile();
+        //prev is all the other contents of the file
+        String prev = Helpers.readFromFile(context);
         data = title + ": " + data;
 
+        //writing to the file
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("reviews.txt", Context.MODE_PRIVATE));
             outputStreamWriter.write(prev + data);
@@ -97,39 +114,6 @@ public class ReviewFragment extends Fragment {
             Log.e("Exception", "File write failed: " + e.toString());
         }
     }
-
-    private String readFromFile() {
-
-        String ret = "";
-
-        try {
-            InputStream inputStream = context.openFileInput("reviews.txt");
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    if(receiveString != ""){
-                        stringBuilder.append(receiveString + "--");
-                    }
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
-        } catch (IOException e) {
-            Log.e("login activity", "Can not read file: " + e.toString());
-        }
-
-        return ret;
-    }
-
 
 
 }

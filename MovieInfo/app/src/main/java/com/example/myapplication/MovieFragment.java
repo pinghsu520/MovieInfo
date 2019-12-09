@@ -1,3 +1,10 @@
+/*
+ * @author: Mario Verdugo. Ping Hsu, Nathon Smith
+ * @description: This is the Movie fragment. this is used to display information
+ * about a single movie. it contains the title, poster, poster of similar movies,
+ * posters of cast members, and buttons to got to websites, review the movie.
+ */
+
 package com.example.myapplication;
 
 
@@ -44,8 +51,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
-import static com.example.myapplication.HomeFragment.popularMovieArrayList;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,23 +58,20 @@ import static com.example.myapplication.HomeFragment.popularMovieArrayList;
 public class MovieFragment extends Fragment {
 
     public Movie movie;
-    ImageView image;
-    TextView title;
-    TextView popularity;
-    TextView release;
-    TextView overview;
+    private ImageView image;
+    private TextView title;
+    private TextView popularity;
+    private TextView release;
+    private TextView overview;
     private String id;
 
     private View myView;
 
-    Button browser;
+    private Button browser;
     private String searchUrl = "";
-    String OpenBrowserUrl="";
-    String videoUrl="";
-    String FinalVideoURL="";
-
-
-
+    private String OpenBrowserUrl="";
+    private String videoUrl="";
+    private String FinalVideoURL="";
 
     public MovieFragment() {
         // Required empty public constructor
@@ -80,25 +82,28 @@ public class MovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         myView =  inflater.inflate(R.layout.fragment_movie, container, false);
+        //getting the id correspponding to the movie.
         Bundle bundle = getArguments();
         id = bundle.getString("id");
 
+        //setting urls to open later
         OpenBrowserUrl="https://www.themoviedb.org/movie/"+id;
-
         searchUrl = "https://api.themoviedb.org/3/movie/" + id + "?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
         videoUrl = "https://api.themoviedb.org/3/movie/" + id + "/videos?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
+
+        //executing 3 async tasks that populate images
         new DownloadTask().execute();
         new castTask().execute();
         new relatedTask().execute();
-
-        System.out.println("I finished the task");
         return myView;
     }
 
+    //sets some onclicks to buttons programmatically
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        //setting the onclick of the poster to show a youtube video of the trailer.
         ImageView view = (ImageView) myView.findViewById(R.id.poster);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +114,7 @@ public class MovieFragment extends Fragment {
             }
         });
 
-
+        //setting the onclick of the browser button to open the website of the image.
         Button button = (Button) myView.findViewById(R.id.browserOpen);
         button.setOnClickListener(new View.OnClickListener()
         {
@@ -123,6 +128,7 @@ public class MovieFragment extends Fragment {
         });
 
 
+        //setting the review button to the onrate function
         Button reviewButton = (Button) myView.findViewById(R.id.review);
         reviewButton.setOnClickListener(new View.OnClickListener()
         {
@@ -133,7 +139,7 @@ public class MovieFragment extends Fragment {
             }
         });
 
-
+        //setting the share button to call the onShare function
         Button shareButton = (Button) myView.findViewById(R.id.share);
         shareButton.setOnClickListener(new View.OnClickListener()
         {
@@ -148,23 +154,39 @@ public class MovieFragment extends Fragment {
     }
 
 
-
+    /**
+     * calls the contact fragment when the share button is clicked.
+     * @param manager the fragment manager
+     * @param contact the contact fragment
+     */
     public void onShare(FragmentManager manager, ContactFragment contact){
+        //settting the container activity.
         contact.setContainerActivity(getActivity());
+
+        //setting the bundle to contain the overview and title.
         Bundle bundle = new Bundle();
         bundle.putString("overview", this.movie.getOverview());
         bundle.putString("title", this.movie.getTitle());
+
+        //setting the fragment to contain the bundle and showing the fragment
         contact.setArguments(bundle);
         FragmentTransaction fTransaction = manager.beginTransaction();
         fTransaction.replace(R.id.main_layout, contact).addToBackStack(null);
         fTransaction.commit();
     }
 
+    /**
+     * calls the review fragment when the review button movie is pressed.
+     * @param manager the FragmentManager
+     * @param reviews the review fragment
+     */
     public void onRate(FragmentManager manager, ReviewFragment reviews){
+        //setting the bundle to contain the id and title of the movie
         Bundle bundle = new Bundle();
-
         bundle.putString("title", this.movie.getTitle());
         bundle.putString("id", this.movie.getId());
+
+        //settting the fragment to have the bundle and showing it
         reviews.setArguments(bundle);
         FragmentTransaction fTransaction = manager.beginTransaction();
         fTransaction.replace(R.id.main_layout, reviews).addToBackStack(null);
@@ -172,90 +194,78 @@ public class MovieFragment extends Fragment {
 
     }
 
+    /**
+     * parses through the json and gets the url of the youtube video.
+     * @param url the url to parse the json from
+     * @throws IOException if the file is incorrect
+     * @throws JSONException if the url is incorrect
+     */
     public void createJson(String url) throws IOException, JSONException {
-        String json = "";
-        //getting the proper url
-        URL url1 = new URL(url);
+        //getting the json
+        JSONObject jsonObject1 = Helpers.getJSONObjet(url);
 
-        String line;
-        //reading the json
-        BufferedReader in = new BufferedReader(new InputStreamReader(url1.openStream()));
-        while ((line = in.readLine()) != null) {
-            json += line;
-        }
-        in.close();
-
-        //creating the jsonObject
-        JSONObject jsonObject1 = new JSONObject(json);
-
+        //going through the results
         JSONArray a=(jsonObject1.getJSONArray("results"));
         if(a.length()>2) {
+            //setting the url
             JSONObject b = (JSONObject) a.get(1);
             String videoID = (b.getString("key"));
             FinalVideoURL = "https://www.youtube.com/watch?v=" + videoID;
-
         }
-
     }
 
     /*
-    This is the async task that actually downloads the flikr images.
-    It does this by parsing JSON from the flikr API.
+    This is the async task that actually downloads the poster images.
+    It does this by parsing JSON from the MovieDatabase API.
     */
     private class DownloadTask extends AsyncTask<Object, Void, JSONObject> {
-
-        private ArrayList<Bitmap> relatedMoviePosters;
-        private ArrayList<Integer> relatedIds;
-
-        private ArrayList<Bitmap> castPosters;
-        private ArrayList<Integer> castIds;
-
-
         @Override
         protected JSONObject doInBackground(Object[] objects) {
             movie = new Movie();
 
+            //getting the url of the youtube video
             try{
                 createJson(videoUrl);
             } catch (Exception e){
                 e.printStackTrace();
             }
 
-            JSONObject movieObject = getObject(searchUrl);
+            //getting the movieObject
+            JSONObject movieObject = Helpers.getJSONObjet(searchUrl);
 
+            //setting the bitmap
             try{
-                Bitmap bitmap = getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + movieObject.getString("poster_path"));
+                Bitmap bitmap = Helpers.getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + movieObject.getString("poster_path"));
                 movie.setPoster(bitmap);
             } catch (Exception e){
                 e.printStackTrace();
             }
-
-
             return movieObject;
         }
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            //myView.findViewById(R.id.progressBar).setVisibility(View.GONE);
-            //getting the approptiate information from the json
+            //setting the contents of the movie object given the json
             try {
                 movie.setVoteAverage(jsonObject.getInt("vote_average"));
                 movie.setOverview(jsonObject.getString("overview"));
                 movie.setTitle(jsonObject.getString("title"));
                 movie.setPopularity(jsonObject.getDouble("popularity"));
                 movie.setReleaseDate(jsonObject.getString("release_date"));
+            } catch (Exception e) { e.printStackTrace(); }
 
-                image = myView.findViewById(R.id.poster);
-                title = myView.findViewById(R.id.title);
-                //popularity = myView.findViewById(R.id.popularity);
-                //release = myView.findViewById(R.id.release);
-                overview = myView.findViewById(R.id.overview);
+            //setting the views to have proper information
+            image = myView.findViewById(R.id.poster);
+            title = myView.findViewById(R.id.title);
+            //popularity = myView.findViewById(R.id.popularity);
+            //release = myView.findViewById(R.id.release);
+            overview = myView.findViewById(R.id.overview);
 
-                image.setImageBitmap(movie.getPoster());
-                title.setText(movie.getTitle());
-                //popularity.setText(Double.toString(movie.getPopularity()));
-                //release.setText(movie.getReleaseDate());
-                overview.setText(movie.getOverview());
+            image.setImageBitmap(movie.getPoster());
+            title.setText(movie.getTitle());
+            //popularity.setText(Double.toString(movie.getPopularity()));
+            //release.setText(movie.getReleaseDate());
+            overview.setText(movie.getOverview());
 
                 /*
                // LinearLayout ll = (LinearLayout) myView.findViewById(R.id.related);
@@ -288,91 +298,57 @@ public class MovieFragment extends Fragment {
                     //ll.addView(image);
                 }
                  */
-            } catch (Exception e) { e.printStackTrace(); }
-        }
-
-
-        public JSONObject getObject(String baseurl){
-            JSONObject jsonObject = null;
-            try {
-                URL url = new URL(baseurl);
-                String line;
-                String json = "";
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                while ((line = in.readLine()) != null) {
-                    json += line;
-                }
-                in.close();
-
-                jsonObject = new JSONObject(json);
-
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-
-            return jsonObject;
-        }
-
-
-        // Used to download poster images
-        public Bitmap getBitmapFromURL(String src) {
-            try {
-                URL url = new URL(src);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                return myBitmap;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
         }
     }
 
 
     /*
-   This is the async task that actually downloads the flikr images.
-   It does this by parsing JSON from the flikr API.
+   This is the async task that actually downloads the cast images.
+   It does this by parsing JSON from the MovieDatabase API.
    */
     private class castTask extends AsyncTask<Object, Void, JSONObject> {
 
         private ArrayList<Bitmap> castPosters;
         private ArrayList<Integer> castIds;
-
+        private String castUrl = "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=17e7d15a4fd879e7d97ec91084cc705b";
 
         @Override
         protected JSONObject doInBackground(Object[] objects) {
             castPosters = new ArrayList<>();
             castIds = new ArrayList<>();
+            //getting the json object
+            JSONObject castObject = Helpers.getJSONObjet(castUrl);
 
-            String castUrl = "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=17e7d15a4fd879e7d97ec91084cc705b";
-
-
-            JSONObject castObject = getObject(castUrl);
+            //fills the information of the arrays
             fillCastInformation(castObject);
-
-
             return castObject;
         }
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
+                //sets the image adapter
                 ViewPager castView = myView.findViewById(R.id.cast);
                 ImageAdapter castAdapter = new ImageAdapter(myView.getContext(), castPosters, castIds, "cast");
                 castView.setAdapter(castAdapter);
         }
 
 
+        /**
+         * goes through the json and dowloads all the poster images of the cast, and
+         * adds them to an array as well as their ids associated with them.
+         * @param jsonObject the jsonObject to iterate through
+         */
         public void fillCastInformation(JSONObject jsonObject){
             try{
+                //the cast json object
                 JSONArray cast = jsonObject.getJSONArray("cast");
+                //iterating through and downlaoding bitmaps
                 for (int i = 0; i < cast.length(); i++){
                     JSONObject castMember = cast.getJSONObject(i);
                     if (castMember.getString("profile_path") != "null" ){
+                        //downloading bitmaps and adding ids.
                         String pictureUrl = "http://image.tmdb.org/t/p/w185/" + castMember.getString("profile_path");
-                        Bitmap bitmap = getBitmapFromURL(pictureUrl);
+                        Bitmap bitmap = Helpers.getBitmapFromURL(pictureUrl);
                         castPosters.add(bitmap);
                         castIds.add(castMember.getInt("id"));
                     }
@@ -380,58 +356,19 @@ public class MovieFragment extends Fragment {
             } catch (Exception e){
                 e.printStackTrace();
             }
-
-
-        }
-
-        public JSONObject getObject(String baseurl){
-            JSONObject jsonObject = null;
-            try {
-                URL url = new URL(baseurl);
-                String line;
-                String json = "";
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                while ((line = in.readLine()) != null) {
-                    json += line;
-                }
-                in.close();
-
-                jsonObject = new JSONObject(json);
-
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-
-            return jsonObject;
-        }
-
-
-        // Used to download poster images
-        public Bitmap getBitmapFromURL(String src) {
-            try {
-                URL url = new URL(src);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                return myBitmap;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
         }
     }
 
     /*
-   This is the async task that actually downloads the flikr images.
-   It does this by parsing JSON from the flikr API.
+   This is the async task that actually downloads the related movie poster images.
+   It does this by parsing JSON from the MovieDatatbase API. I have to have a whole differnt
+   task becuase the fields of the json are the same
    */
     private class relatedTask extends AsyncTask<Object, Void, JSONObject> {
 
         private ArrayList<Bitmap> relatedMoviePosters;
         private ArrayList<Integer> relatedIds;
-
+        private String similarUrl = "https://api.themoviedb.org/3/movie/" + id + "/similar?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US&page=1";
 
 
         @Override
@@ -439,25 +376,32 @@ public class MovieFragment extends Fragment {
             relatedMoviePosters = new ArrayList<>();
             relatedIds = new ArrayList<>();
 
-
-            String similarUrl = "https://api.themoviedb.org/3/movie/" + id + "/similar?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US&page=1";
-
-            JSONObject jsonObject = getObject(similarUrl);
+            //getting the json
+            JSONObject jsonObject = Helpers.getJSONObjet(similarUrl);
+            //filling the arrays
             parseJSONSimilarMovies(jsonObject);
             return jsonObject;
         }
 
+        /**
+         * iterates through the json object and downloads the images and sends the bitmaps to
+         * the arraylist and the ids to the images to a diffrent array list.
+         * @param jsonObject the jsonobject to iterate through
+         */
         public void parseJSONSimilarMovies(JSONObject jsonObject){
 
             try {
-                JSONArray resArray = jsonObject.getJSONArray("results"); //Getting the results object
+                //Getting the results object
+                JSONArray resArray = jsonObject.getJSONArray("results");
+                //iterating through the results
                 for (int i = 0; i < resArray.length(); i++) {
                     JSONObject jsonObject1 = resArray.getJSONObject(i);
                     if(jsonObject1!=null) {
-
-                        Bitmap bitmap = getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + jsonObject1.getString("poster_path"));
+                        //getting the bitmaps and adding to arraylist
+                        Bitmap bitmap = Helpers.getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + jsonObject1.getString("poster_path"));
                         relatedMoviePosters.add(bitmap);
 
+                        //getting the ids and adding to arraylist
                         Integer movieId = jsonObject1.getInt("id");
                         relatedIds.add(movieId);
                     }
@@ -471,48 +415,10 @@ public class MovieFragment extends Fragment {
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
+                //setting the image adapter
                 ViewPager view = myView.findViewById(R.id.related);
                 ImageAdapter imageAdapter = new ImageAdapter(myView.getContext() ,relatedMoviePosters, relatedIds, "movie");
                 view.setAdapter(imageAdapter);
-        }
-
-
-        public JSONObject getObject(String baseurl){
-            JSONObject jsonObject = null;
-            try {
-                URL url = new URL(baseurl);
-                String line;
-                String json = "";
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                while ((line = in.readLine()) != null) {
-                    json += line;
-                }
-                in.close();
-
-                jsonObject = new JSONObject(json);
-
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-
-            return jsonObject;
-        }
-
-
-        // Used to download poster images
-        public Bitmap getBitmapFromURL(String src) {
-            try {
-                URL url = new URL(src);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                return myBitmap;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
         }
     }
 

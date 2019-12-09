@@ -1,6 +1,10 @@
+/*
+ * @author: Mario Verdugo, Ping Hsu, Nathon Smith
+ * @description: This is the contactPickerFragment. It will display
+ * all of your contacts, and once one is clicked it will send an email
+ * to that person with your drawing.
+ */
 package com.example.myapplication;
-
-
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,12 +34,11 @@ public class ContactFragment extends Fragment {
     private ListView contactsListView;
     ArrayAdapter<String> contactsAdapter = null;
     private ArrayList<String> contacts = new ArrayList<String>();
-    ListView contactList;
-    String email;
-    String overview;
-    String title;
+    private ListView contactList;
+    private String email;
+    private String overview;
+    private String title;
     private boolean populated = false;
-
     public ContactFragment() { }
 
     public void setContainerActivity(Activity containerActivity) {
@@ -52,6 +55,7 @@ public class ContactFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_contact, container, false);
         contactList = v.findViewById(R.id.contact_list_view);
         Bundle bundle = getArguments();
+
         overview = bundle.getString("overview");
         title = bundle.getString("title");
         return v;
@@ -100,7 +104,6 @@ public class ContactFragment extends Fragment {
                     intent.putExtra(Intent.EXTRA_TEXT, overview);
                     intent.putExtra(Intent.EXTRA_SUBJECT, "Check out: " + title);
                     startActivity(intent);
-
                 }
 
             });

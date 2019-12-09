@@ -1,6 +1,13 @@
+/*
+ * @author: Mario Verdugo. Ping Hsu, Nathon Smith
+ * @description: This is the HomeFragment. It is the first fragment that is
+ * displayed, and contains a few things. It contains a search bar, popular movie
+ * images, and all the reviews the user has written.
+ */
 package com.example.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -17,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.EditText;
 
 import android.widget.ImageView;
@@ -48,24 +56,17 @@ import static android.content.ContentValues.TAG;
 public class HomeFragment extends Fragment {
 
     private View myView;
-    Context context;
-    public static ArrayList<Movie> popularMovieArrayList=new ArrayList<Movie>();
+    private  Context context;
 
     // These two arrays are for the poster urls and the poster bitmaps
-    public static ArrayList<String> posterUrls = new ArrayList<String>();
-    public static ArrayList<Bitmap> posters = new ArrayList<Bitmap>();
-    // used to refernce the view when updating the UI with bitmaps
-    static View pageView;
-
+    private ArrayList<String> posterUrls = new ArrayList<String>();
+    private ArrayList<Bitmap> posters = new ArrayList<Bitmap>();
     private ArrayList<Integer> movieIds = new ArrayList<>();
-
-    public static ArrayList<String> reviews = new ArrayList<String>();
+    private ArrayList<String> reviews = new ArrayList<String>();
 
     public HomeFragment() {
         // Required empty public constructor
     }
-
-    // test comment plz work 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,164 +79,134 @@ public class HomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         myView =  inflater.inflate(R.layout.fragment_home, container, false);
-        context = myView.getContext();
-        pageView = myView;
-        new DownloadTask().execute();
-        populateReviews();
+        //setting the onclick of the search button
+        Button searchButton = myView.findViewById(R.id.search_button);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSearchPressed();
+            }
+        });
 
+        context = myView.getContext();
+
+        System.out.println("hello");
+        //downloads the popular movie posters
+        new DownloadTask().execute();
+
+        //sets the reviews
+        populateReviews();
 
         return myView;
     }
 
+    /**
+     * This function iterates through the review list, and adds a bunch of text views
+     * with the text being the reviews to a linear layout.
+     */
     public void populateReviews(){
-        String revs = readFromFile();
+        String revs = Helpers.readFromFile(context);
         String[] userRevs = revs.split("--");
         LinearLayout allRevs = myView.findViewById(R.id.reviewholder);
+        //iterating over the reviews
         for (int i = 0; i < userRevs.length; i++){
+            //creating a text view with the text in it.
             TextView rev = new TextView(context);
             rev.setText(userRevs[i]);
+            //adding it to linear layout
             allRevs.addView(rev);
-
         }
     }
 
-    public void addReview(){
+    /**
+     * this is the function that is called from a seperate fragment that will
+     * add a review to the review list, then it will add only that review to
+     * the linear layout.
+     * @param review
+     */
+    public void addReview(String review){
+        //adding review to the arraylist
+        reviews.add(review);
+
+        //getting the linear layout
         LinearLayout allRevs = myView.findViewById(R.id.reviewholder);
+
+        //setting the textview and adding to the LL
         TextView rev = new TextView(context);
         rev.setText(reviews.get(reviews.size() - 1));
         allRevs.addView(rev);
     }
 
-
-
-
-    public void onSearchPressed(FragmentManager manager, SearchFragment search){
+    /**
+     * this is the onclick function that is called when the search button is clicked.
+     * it displays the search fragment and sends in the querey to the search fragment.
+     */
+    public void onSearchPressed(){
+        //getting the query that was typed
         EditText searchText = (EditText) myView.findViewById(R.id.searchText);
         String query = searchText.getText().toString();
 
-
-
+        //adding the querey to the bundle
         Bundle bundle = new Bundle();
         bundle.putString("search", query);
 
+        //creating a fragment and adding the bundle to it
+        SearchFragment search = new SearchFragment();
         search.setArguments(bundle);
 
-        FragmentTransaction fTransaction = manager.beginTransaction();
+        FragmentTransaction fTransaction = MainActivity.manager.beginTransaction();
         //adding it so that it will show
         fTransaction.replace(R.id.main_layout, search).addToBackStack(null);
         fTransaction.commit();
     }
 
-    public void onMoviePressed(FragmentManager manager, MovieFragment movie, int position){
-        Bundle bundle = new Bundle();
-        Movie newMovie = popularMovieArrayList.get(position);
-
-        bundle.putString("id", newMovie.getId());
-
-        //popularMovieArrayList.get(position).setPoster(posters.get(position));
-        movie.setArguments(bundle);
-        FragmentTransaction fTransaction = manager.beginTransaction();
-        fTransaction.replace(R.id.main_layout, movie).addToBackStack(null);
-        fTransaction.commit();
-    }
-
-
-
-
-
+    /**
+     * This function goes through a JSONObject, and gets all the posterUrls for the bitmap
+     * and also gets the ids corresponding to the urls.
+     * @param jsonObject : the jsonObject to iterate over
+     */
     public void parseJSONPopularMovies(JSONObject jsonObject){
 
         try {
-            JSONArray resArray = jsonObject.getJSONArray("results"); //Getting the results object
+            //Getting the results object
+            JSONArray resArray = jsonObject.getJSONArray("results");
             for (int i = 0; i < resArray.length()-1; i++) {
+                //getting the jsonObject at each array index
                 JSONObject jsonObject1 = resArray.getJSONObject(i);
                 if(jsonObject1!=null) {
-
+                    //adding the url of the poster to the list
                     String posterUrl = jsonObject1.getString("poster_path");
                     posterUrls.add(posterUrl);
 
-                    Movie movie = new Movie(); //New Movie object
-                    movie.setVoteAverage(jsonObject1.getInt("vote_average"));
-                    movie.setOverview(jsonObject1.getString("overview"));
-                    movie.setTitle(jsonObject1.getString("title"));
-                    movie.setPopularity(jsonObject1.getDouble("popularity"));
-                    movie.setReleaseDate(jsonObject1.getString("release_date"));
+                    //adding the id of the movie to a list
                     Integer movieId = jsonObject1.getInt("id");
-                    movie.setId(movieId.toString());
-
                     movieIds.add(movieId);
-                    popularMovieArrayList.add(movie);
                 }
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e(TAG, "Erro occurred during JSON Parsing", e);
+            Log.e(TAG, "Error occurred during JSON Parsing", e);
         }
-        /*
-        for(Movie a: popularMovieArrayList){
-            System.out.println(a.getTitle());
-            System.out.println(a.getOverview());
-            System.out.println(a.getReleaseDate());
-
-        }
-         */
-        //System.out.println("poster urls");
-        //System.out.println(posterUrls);
     }
-
-    //http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=f3de492aa94182ea8b782ec30b1d6453
 
     // This private class gets the json information through the URL api.
     private class DownloadTask extends AsyncTask<Object, Void, JSONObject> {
         public String YOUR_API_KEY = "f3de492aa94182ea8b782ec30b1d6453";
         public String popularMoviesURL = "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=" + YOUR_API_KEY;
 
-        public String topRatedMoviesURL = "http://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key=" + YOUR_API_KEY;
-
         public JSONObject jsonObject;
 
         @Override
         protected JSONObject doInBackground(Object[] objects) {
-
-            URLConnection urlConn = null;
-            BufferedReader bufferedReader = null;
-            URL url = null;
-            try {
-                url = new URL(popularMoviesURL);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            try {
-
-                urlConn = url.openConnection();
-                bufferedReader = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-
-                StringBuffer stringBuffer = new StringBuffer();
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuffer.append(line);
-                }
-                jsonObject = new JSONObject(stringBuffer.toString());
-//                return jsonObject;
-
-
-            } catch (Exception ex) {
-                Log.e("App", "yourDataTask", ex);
-                return null;
-            } finally {
-                if (bufferedReader != null) {
-                    try {
-                        bufferedReader.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            System.out.println("world");
+            //getting the jsonObject
+            jsonObject = Helpers.getJSONObjet(popularMoviesURL);
+            System.out.println(jsonObject);
             parseJSONPopularMovies(jsonObject);
+
+            //downloading the posters
             downloadMoviePosters();
-
-
             return null;
         }
 
@@ -247,71 +218,21 @@ public class HomeFragment extends Fragment {
             Context context = myView.getContext();
             ImageAdapter imageAdapter = new ImageAdapter(context ,posters, movieIds, "movie");
             view.setAdapter(imageAdapter);
-            //updatePosters();
 
         }
 
     }
 
-    // This method uses the poster urls to download all poster bitmaps and then adds them to a list
+    /**
+     * this function goes through all the posterUrls list, and adds the bitmaps to
+     * a new arraylist that is a bitmap arraylist
+     */
     private void downloadMoviePosters(){
         for (int i = 0; i < posterUrls.size(); i++){
-            Bitmap bitmap = getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + posterUrls.get(i));
+            //downloading the posters and adding to new array
+            Bitmap bitmap = Helpers.getBitmapFromURL("http://image.tmdb.org/t/p/w185/" + posterUrls.get(i));
             posters.add(bitmap);
         }
     }
-
-
-    // Used to download poster images
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private String readFromFile() {
-
-        String ret = "";
-
-        try {
-            InputStream inputStream = context.openFileInput("reviews.txt");
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    if(receiveString != ""){
-                        stringBuilder.append(receiveString + "--");
-                    }
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
-        } catch (IOException e) {
-            Log.e("login activity", "Can not read file: " + e.toString());
-        }
-
-        return ret;
-    }
-
-
-
-
 
 }
