@@ -84,7 +84,6 @@
                 android:id="@+id/review"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:onClick="onReview"
                 android:text="Review"
                 android:layout_weight="1"/>
 
@@ -93,7 +92,6 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:text="Share"
-                android:onClick="onContactClicked"
                 android:layout_weight="1"/>
 
 

@@ -42,24 +42,7 @@ public class MainActivity extends AppCompatActivity {
         home.onSearchPressed(manager, search);
     }
 
-    public void onMovieClicked(View v, int moviePosition){
-        home.onMoviePressed(manager, movie, moviePosition);
-    }
 
-    public void onReview(View v){
-        movie.onRate(manager, reviews);
-    }
 
-    public void newReview(View v){
-
-    }
-
-    public void onPostReview(View v){
-        reviews.onPost();
-    }
-
-    public void onContactClicked(View v){
-        movie.onShare(manager, contacts);
-    }
 
 }

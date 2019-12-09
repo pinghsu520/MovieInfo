@@ -52,7 +52,7 @@ import static com.example.myapplication.HomeFragment.popularMovieArrayList;
  */
 public class MovieFragment extends Fragment {
 
-    private Movie movie;
+    public Movie movie;
     ImageView image;
     TextView title;
     TextView popularity;
@@ -87,8 +87,9 @@ public class MovieFragment extends Fragment {
 
         searchUrl = "https://api.themoviedb.org/3/movie/" + id + "?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
         videoUrl = "https://api.themoviedb.org/3/movie/" + id + "/videos?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
-        movie = new Movie();
         new DownloadTask().execute();
+
+        System.out.println("I finished the task");
         return myView;
     }
 
@@ -119,14 +120,38 @@ public class MovieFragment extends Fragment {
             }
         });
 
+
+        Button reviewButton = (Button) myView.findViewById(R.id.review);
+        reviewButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onRate(MainActivity.manager, new ReviewFragment());
+            }
+        });
+
+
+        Button shareButton = (Button) myView.findViewById(R.id.share);
+        shareButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onShare(MainActivity.manager, new ContactFragment());
+            }
+        });
+
+
     }
 
 
 
     public void onShare(FragmentManager manager, ContactFragment contact){
+        contact.setContainerActivity(getActivity());
         Bundle bundle = new Bundle();
-        bundle.putString("overview", movie.getOverview());
-        bundle.putString("title", movie.getTitle());
+        bundle.putString("overview", this.movie.getOverview());
+        bundle.putString("title", this.movie.getTitle());
         contact.setArguments(bundle);
         FragmentTransaction fTransaction = manager.beginTransaction();
         fTransaction.replace(R.id.main_layout, contact).addToBackStack(null);
@@ -136,8 +161,8 @@ public class MovieFragment extends Fragment {
     public void onRate(FragmentManager manager, ReviewFragment reviews){
         Bundle bundle = new Bundle();
 
-        bundle.putString("title", movie.getTitle());
-        bundle.putString("id", movie.getId());
+        bundle.putString("title", this.movie.getTitle());
+        bundle.putString("id", this.movie.getId());
         reviews.setArguments(bundle);
         FragmentTransaction fTransaction = manager.beginTransaction();
         fTransaction.replace(R.id.main_layout, reviews).addToBackStack(null);
@@ -186,6 +211,7 @@ public class MovieFragment extends Fragment {
 
         @Override
         protected JSONObject doInBackground(Object[] objects) {
+            movie = new Movie();
             relatedMoviePosters = new ArrayList<>();
             relatedIds = new ArrayList<>();
 

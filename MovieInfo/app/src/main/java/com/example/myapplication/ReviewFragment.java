@@ -5,11 +5,13 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -43,6 +45,17 @@ public class ReviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View myView =  inflater.inflate(R.layout.fragment_review, container, false);
+
+        Button button = myView.findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onPost();
+            }
+        });
+
         context = myView.getContext();
         Bundle bundle = getArguments();
         title = bundle.getString("title");
@@ -56,14 +69,17 @@ public class ReviewFragment extends Fragment {
     }
 
     public void onPost(){
+        System.out.println("i am here");
         String review = userRev.getText().toString();
         writeToFile(review);
         HomeFragment.reviews.add(review);
         MainActivity.home.addReview();
         String text = readFromFile();
-        System.out.println("testing file");
-        System.out.println(text);
         userRev.setText("");
+
+        FragmentManager manager = MainActivity.manager;
+        manager.beginTransaction().replace(R.id.main_layout, MainActivity.home).addToBackStack(null).commit();
+
     }
 
     // writing to file
