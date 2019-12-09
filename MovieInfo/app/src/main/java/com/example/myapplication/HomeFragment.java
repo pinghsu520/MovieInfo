@@ -46,6 +46,7 @@ import static android.content.ContentValues.TAG;
 
 
 public class HomeFragment extends Fragment {
+
     private View myView;
     Context context;
     public static ArrayList<Movie> popularMovieArrayList=new ArrayList<Movie>();
@@ -55,6 +56,8 @@ public class HomeFragment extends Fragment {
     public static ArrayList<Bitmap> posters = new ArrayList<Bitmap>();
     // used to refernce the view when updating the UI with bitmaps
     static View pageView;
+
+    private ArrayList<Integer> movieIds = new ArrayList<>();
 
     public static ArrayList<String> reviews = new ArrayList<String>();
 
@@ -140,7 +143,7 @@ public class HomeFragment extends Fragment {
 
 
 
-    public static void parseJSONPopularMovies(JSONObject jsonObject){
+    public void parseJSONPopularMovies(JSONObject jsonObject){
 
         try {
             JSONArray resArray = jsonObject.getJSONArray("results"); //Getting the results object
@@ -159,6 +162,8 @@ public class HomeFragment extends Fragment {
                     movie.setReleaseDate(jsonObject1.getString("release_date"));
                     Integer movieId = jsonObject1.getInt("id");
                     movie.setId(movieId.toString());
+
+                    movieIds.add(movieId);
                     popularMovieArrayList.add(movie);
                 }
 
@@ -175,8 +180,8 @@ public class HomeFragment extends Fragment {
 
         }
          */
-        System.out.println("poster urls");
-        System.out.println(posterUrls);
+        //System.out.println("poster urls");
+        //System.out.println(posterUrls);
     }
 
     //http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=f3de492aa94182ea8b782ec30b1d6453
@@ -240,7 +245,7 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(JSONObject jsonObject) {
             ViewPager view = myView.findViewById(R.id.newMovies);
             Context context = myView.getContext();
-            ImageAdapter imageAdapter = new ImageAdapter(context ,posters, popularMovieArrayList);
+            ImageAdapter imageAdapter = new ImageAdapter(context ,posters, movieIds, "movie");
             view.setAdapter(imageAdapter);
             //updatePosters();
 

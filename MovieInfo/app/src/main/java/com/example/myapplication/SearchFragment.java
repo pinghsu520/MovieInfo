@@ -120,13 +120,17 @@ public class SearchFragment extends Fragment {
 
                     //String image = jsonObject.getString("poster_path");
 
-                    //hm.put("image", jsonObject.getString("poster_path"));
-                    hm.put("title", getJsonString(jsonObject, "title"));
-                    hm.put("overview", getJsonString(jsonObject, "overview"));
+                    String title = getJsonString(jsonObject, "title");
+                    String overview = getJsonString(jsonObject, "overview");
+                    if (!title.equals("") && !overview.equals("")){
+                        //hm.put("image", jsonObject.getString("poster_path"));
+                        hm.put("title", title);
+                        hm.put("overview", overview);
 
-                    //putting the url as a key with the jsonObject as a value
-                    movies.put(getJsonString(jsonObject, "title"), jsonObject);
-                    arrayList.add(hm);
+                        //putting the url as a key with the jsonObject as a value
+                        movies.put(title, jsonObject);
+                        arrayList.add(hm);
+                    }
                 }
 
                 //the ids in string form

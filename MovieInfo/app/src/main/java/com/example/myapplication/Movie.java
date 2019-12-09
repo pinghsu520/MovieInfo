@@ -5,13 +5,13 @@ import android.graphics.Bitmap;
 public class Movie {
 
 
-    private String title;
+    private String title = "";
     private double popularity;
     private String releaseDate;
-    private String overview;
+    private String overview = "";
     private  int voteAverage;
     private Bitmap poster;
-    private String id;
+    private String id = "";
 
 
     public String getId(){return id;}
