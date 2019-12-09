@@ -88,6 +88,8 @@ public class MovieFragment extends Fragment {
         searchUrl = "https://api.themoviedb.org/3/movie/" + id + "?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
         videoUrl = "https://api.themoviedb.org/3/movie/" + id + "/videos?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US";
         new DownloadTask().execute();
+        new castTask().execute();
+        new relatedTask().execute();
 
         System.out.println("I finished the task");
         return myView;
@@ -212,21 +214,6 @@ public class MovieFragment extends Fragment {
         @Override
         protected JSONObject doInBackground(Object[] objects) {
             movie = new Movie();
-            relatedMoviePosters = new ArrayList<>();
-            relatedIds = new ArrayList<>();
-
-            castPosters = new ArrayList<>();
-            castIds = new ArrayList<>();
-
-
-            String similarUrl = "https://api.themoviedb.org/3/movie/" + id + "/similar?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US&page=1";
-            String castUrl = "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=17e7d15a4fd879e7d97ec91084cc705b";
-
-            JSONObject jsonObject = getObject(similarUrl);
-            parseJSONSimilarMovies(jsonObject);
-
-            JSONObject castObject = getObject(castUrl);
-            fillCastInformation(castObject);
 
             try{
                 createJson(videoUrl);
@@ -249,8 +236,6 @@ public class MovieFragment extends Fragment {
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-
-            System.out.println(jsonObject);
             //myView.findViewById(R.id.progressBar).setVisibility(View.GONE);
             //getting the approptiate information from the json
             try {
@@ -271,9 +256,6 @@ public class MovieFragment extends Fragment {
                 //popularity.setText(Double.toString(movie.getPopularity()));
                 //release.setText(movie.getReleaseDate());
                 overview.setText(movie.getOverview());
-
-                ViewPager view = myView.findViewById(R.id.related);
-                Context context = myView.getContext();
 
                 /*
                // LinearLayout ll = (LinearLayout) myView.findViewById(R.id.related);
@@ -306,14 +288,163 @@ public class MovieFragment extends Fragment {
                     //ll.addView(image);
                 }
                  */
-                ImageAdapter imageAdapter = new ImageAdapter(context ,relatedMoviePosters, relatedIds, "movie");
-                view.setAdapter(imageAdapter);
-
-                ViewPager castView = myView.findViewById(R.id.cast);
-                ImageAdapter castAdapter = new ImageAdapter(context, castPosters, castIds, "cast");
-                castView.setAdapter(castAdapter);
-
             } catch (Exception e) { e.printStackTrace(); }
+        }
+
+
+        public JSONObject getObject(String baseurl){
+            JSONObject jsonObject = null;
+            try {
+                URL url = new URL(baseurl);
+                String line;
+                String json = "";
+                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+                while ((line = in.readLine()) != null) {
+                    json += line;
+                }
+                in.close();
+
+                jsonObject = new JSONObject(json);
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return jsonObject;
+        }
+
+
+        // Used to download poster images
+        public Bitmap getBitmapFromURL(String src) {
+            try {
+                URL url = new URL(src);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                return myBitmap;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+
+    /*
+   This is the async task that actually downloads the flikr images.
+   It does this by parsing JSON from the flikr API.
+   */
+    private class castTask extends AsyncTask<Object, Void, JSONObject> {
+
+        private ArrayList<Bitmap> castPosters;
+        private ArrayList<Integer> castIds;
+
+
+        @Override
+        protected JSONObject doInBackground(Object[] objects) {
+            castPosters = new ArrayList<>();
+            castIds = new ArrayList<>();
+
+            String castUrl = "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=17e7d15a4fd879e7d97ec91084cc705b";
+
+
+            JSONObject castObject = getObject(castUrl);
+            fillCastInformation(castObject);
+
+
+            return castObject;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+                ViewPager castView = myView.findViewById(R.id.cast);
+                ImageAdapter castAdapter = new ImageAdapter(myView.getContext(), castPosters, castIds, "cast");
+                castView.setAdapter(castAdapter);
+        }
+
+
+        public void fillCastInformation(JSONObject jsonObject){
+            try{
+                JSONArray cast = jsonObject.getJSONArray("cast");
+                for (int i = 0; i < cast.length(); i++){
+                    JSONObject castMember = cast.getJSONObject(i);
+                    if (castMember.getString("profile_path") != "null" ){
+                        String pictureUrl = "http://image.tmdb.org/t/p/w185/" + castMember.getString("profile_path");
+                        Bitmap bitmap = getBitmapFromURL(pictureUrl);
+                        castPosters.add(bitmap);
+                        castIds.add(castMember.getInt("id"));
+                    }
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+        }
+
+        public JSONObject getObject(String baseurl){
+            JSONObject jsonObject = null;
+            try {
+                URL url = new URL(baseurl);
+                String line;
+                String json = "";
+                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+                while ((line = in.readLine()) != null) {
+                    json += line;
+                }
+                in.close();
+
+                jsonObject = new JSONObject(json);
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return jsonObject;
+        }
+
+
+        // Used to download poster images
+        public Bitmap getBitmapFromURL(String src) {
+            try {
+                URL url = new URL(src);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                return myBitmap;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    /*
+   This is the async task that actually downloads the flikr images.
+   It does this by parsing JSON from the flikr API.
+   */
+    private class relatedTask extends AsyncTask<Object, Void, JSONObject> {
+
+        private ArrayList<Bitmap> relatedMoviePosters;
+        private ArrayList<Integer> relatedIds;
+
+
+
+        @Override
+        protected JSONObject doInBackground(Object[] objects) {
+            relatedMoviePosters = new ArrayList<>();
+            relatedIds = new ArrayList<>();
+
+
+            String similarUrl = "https://api.themoviedb.org/3/movie/" + id + "/similar?api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US&page=1";
+
+            JSONObject jsonObject = getObject(similarUrl);
+            parseJSONSimilarMovies(jsonObject);
+            return jsonObject;
         }
 
         public void parseJSONSimilarMovies(JSONObject jsonObject){
@@ -338,24 +469,13 @@ public class MovieFragment extends Fragment {
             }
         }
 
-        public void fillCastInformation(JSONObject jsonObject){
-            try{
-                JSONArray cast = jsonObject.getJSONArray("cast");
-                for (int i = 0; i < cast.length(); i++){
-                    JSONObject castMember = cast.getJSONObject(i);
-                    if (castMember.getString("profile_path") != "null" ){
-                        String pictureUrl = "http://image.tmdb.org/t/p/w185/" + castMember.getString("profile_path");
-                        Bitmap bitmap = getBitmapFromURL(pictureUrl);
-                        castPosters.add(bitmap);
-                        castIds.add(castMember.getInt("id"));
-                    }
-                }
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-
-
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+                ViewPager view = myView.findViewById(R.id.related);
+                ImageAdapter imageAdapter = new ImageAdapter(myView.getContext() ,relatedMoviePosters, relatedIds, "movie");
+                view.setAdapter(imageAdapter);
         }
+
 
         public JSONObject getObject(String baseurl){
             JSONObject jsonObject = null;
