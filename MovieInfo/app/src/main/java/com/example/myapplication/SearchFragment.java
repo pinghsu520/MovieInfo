@@ -1,3 +1,8 @@
+/*
+ * @author: Mario Verdugo. Ping Hsu, Nathon Smith
+ * @description: This is the searchFragment. It is a listview of all the
+ * relevant searches to whatever the user searched.
+ */
 package com.example.myapplication;
 
 import android.content.Context;
@@ -33,16 +38,16 @@ import java.util.HashMap;
 
 public class SearchFragment extends Fragment {
 
-    public String searchQuery;
-    public String searchUrl = "https://api.themoviedb.org/3/search/multi?" +
+    private String searchQuery;
+    private String searchUrl = "https://api.themoviedb.org/3/search/multi?" +
             "api_key=17e7d15a4fd879e7d97ec91084cc705b&language=en-US&page=1&include_adult=false" +
             "&query=";
 
-    public HashMap<String, JSONObject> movies;
+    private HashMap<String, JSONObject> movies;
 
-    public View myView;
+    private View myView;
 
-    public FragmentManager manager;
+    private FragmentManager manager;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -53,12 +58,13 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         myView = inflater.inflate(R.layout.fragment_search, container, false);
+
+        //getting the search querey
         Bundle bundle = getArguments();
         searchQuery = bundle.getString("search");
         movies = new HashMap<>();
         this.manager = MainActivity.manager;
         new DownloadTask().execute();
-
         return myView;
     }
 
@@ -66,34 +72,23 @@ public class SearchFragment extends Fragment {
 
 
     /*
-    This is the async task that actually downloads the flikr images.
-    It does this by parsing JSON from the flikr API.
+    This is the async task that actually downloads the search results .
+    It does this by parsing JSON from the MovieDatabase API.
     */
     private class DownloadTask extends AsyncTask<Object, Void, JSONObject> {
 
         @Override
         protected JSONObject doInBackground(Object[] objects) {
-            try {
-                String json = "";
-                //getting the proper url
-                URL url = new URL(searchUrl + searchQuery);
-
-                String line;
-                //reading the json
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                while ((line = in.readLine()) != null) {
-                    json += line;
-                }
-                in.close();
-
-                //creating the jsonObject
-                JSONObject jsonObject = new JSONObject(json);
-                return jsonObject;
-            } catch (Exception e) { e.printStackTrace(); }
-
-            return null;
+            //getting the jsonObject
+            return Helpers.getJSONObjet(searchUrl + searchQuery);
         }
 
+        /**
+         * Helper function used to get a json field.
+         * @param json the object to get from
+         * @param field the field to get
+         * @return the string of the object
+         */
         private String getJsonString(JSONObject json, String field){
             try{
                 return json.getString(field);
@@ -146,8 +141,6 @@ public class SearchFragment extends Fragment {
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                        //getting the jsonobject
                         JSONObject clicked = movies.get(arrayList.get(i).get("title"));
                         Bundle bundle = new Bundle();
                         Integer movieId = 0;
@@ -158,25 +151,12 @@ public class SearchFragment extends Fragment {
                         }
 
                         bundle.putString("id", movieId.toString());
-
-                        MovieFragment movieFrag = MainActivity.movie;
+                        MovieFragment movieFrag = new MovieFragment();
                         movieFrag.setArguments(bundle);
                         //starting the new fragment
                         FragmentTransaction newTransaction =  manager.beginTransaction();
                         newTransaction.replace(R.id.main_layout, movieFrag).addToBackStack(null);
                         newTransaction.commit();
-                        /*
-                        Bundle bundle = new Bundle();
-                        //putting the json object as an extra value
-                        bundle.putString("json", clicked.toString());
-                        preview.setArguments(bundle);
-
-                        //starting the new fragment
-                        FragmentTransaction newTransaction =  manager.beginTransaction();
-                        newTransaction.replace(R.id.search_layout, preview).addToBackStack(null);
-                        newTransaction.commit();
-                        */
-
                     }
                 });
 
