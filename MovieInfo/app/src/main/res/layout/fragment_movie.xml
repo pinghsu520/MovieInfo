@@ -3,22 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:layout="http://schemas.android.com/apk/res-auto"
     tools:context=".MovieFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="17">
+        android:weightSum="17"
+        style="@style/bigLayout">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:textSize="30dp"
+            style="@style/title"
             android:text=""
             android:gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1.5"/>
 
         <ImageView
             android:id="@+id/poster"
@@ -27,6 +29,7 @@
             android:layout_height="0dp"
             android:layout_weight="5"
             android:layout_gravity="center"
+            style="@style/swipezone"
              />
 
         <!--
@@ -38,39 +41,33 @@
              />
         -->
 
+        <TextView
+            android:id="@+id/release"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text=""
+            android:layout_weight=".5"
+            style="@style/text"
+            />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_weight="1.5"
             android:layout_gravity="center"
             >
 
             <TextView
                 android:id="@+id/overview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:isScrollContainer="true"
-                android:text="" />
+                android:text=""
+                style="@style/text"/>
         </ScrollView>
 
 
-        <!--
-        <TextView
-            android:id="@+id/release"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:text=""
-            />
 
-        <TextView
-            android:id="@+id/popularity"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:text=""
-            />
-
-        -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -84,45 +81,44 @@
                 android:id="@+id/review"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="Review"
-                android:layout_weight="1"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/review"
+                android:layout_weight="1"
+                style="@style/button"/>
 
             <Button
                 android:id="@+id/share"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="Share"
-                android:layout_weight="1"/>
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:text="@string/share"
+                android:layout_weight="1"
+                style="@style/button"/>
 
 
             <Button
                 android:id="@+id/browserOpen"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="Enter Website!"
-                android:layout_weight="1" />
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:text="@string/web"
+                android:layout_weight="1"
+                style="@style/button"/>
         </LinearLayout>
 
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Related Movies:"
-            />
-
-        <androidx.viewpager.widget.ViewPager
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/related"
-            android:layout_weight="3"
-            android:layout_gravity="center"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="Cast:"
+            style="@style/smallTitle"
+            android:text="@string/cast"
             />
 
         <androidx.viewpager.widget.ViewPager
@@ -130,6 +126,24 @@
             android:layout_height="0dp"
             android:id="@+id/cast"
             android:layout_weight="3"
+            style="@style/swipezone"
             android:layout_gravity="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            style="@style/smallTitle"
+            android:text="@string/related"
+            />
+
+        <androidx.viewpager.widget.ViewPager
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/related"
+            android:layout_weight="3"
+            android:layout_gravity="center"
+            style="@style/swipezone"/>
+
+
     </LinearLayout>
 </FrameLayout>

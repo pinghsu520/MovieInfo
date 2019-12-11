@@ -108,9 +108,14 @@ public class MovieFragment extends Fragment {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(FinalVideoURL));
-                getActivity().startActivity(i);
+                System.out.println("video url");
+                System.out.println(FinalVideoURL);
+                if (FinalVideoURL.length() > 5){
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(FinalVideoURL));
+                    getActivity().startActivity(i);
+                }
+
             }
         });
 
@@ -211,6 +216,8 @@ public class MovieFragment extends Fragment {
             JSONObject b = (JSONObject) a.get(1);
             String videoID = (b.getString("key"));
             FinalVideoURL = "https://www.youtube.com/watch?v=" + videoID;
+            System.out.println("final video url");
+            System.out.println(FinalVideoURL);
         }
     }
 
@@ -258,13 +265,13 @@ public class MovieFragment extends Fragment {
             image = myView.findViewById(R.id.poster);
             title = myView.findViewById(R.id.title);
             //popularity = myView.findViewById(R.id.popularity);
-            //release = myView.findViewById(R.id.release);
+            release = myView.findViewById(R.id.release);
             overview = myView.findViewById(R.id.overview);
 
             image.setImageBitmap(movie.getPoster());
             title.setText(movie.getTitle());
             //popularity.setText(Double.toString(movie.getPopularity()));
-            //release.setText(movie.getReleaseDate());
+            release.setText("Release Date: " + movie.getReleaseDate());
             overview.setText(movie.getOverview());
 
                 /*
