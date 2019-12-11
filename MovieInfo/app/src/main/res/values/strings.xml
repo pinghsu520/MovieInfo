@@ -3,4 +3,26 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="helpTitle">Help Page</string>
+    <string name="overview">Overview</string>
+    <string name="overviewText">This app takes information from The Movie Database API and presents it so that the user can browse it with ease. Popular movies are displayed along with relevant movies. Additionally, the user can search for movies.</string>
+    <string name="features">Features</string>
+    <string name="featureText">Here are the main app features:\nHome Page: Here the user is presented with the ability to search movies and also see currently popular movies. Click on these to open a movie page.\nMovie Page: Here the user is presented with all information for the movie. They can click the image ot view the trailer and also share, review, or enter movie website. Also on this page are relevant movies and actors in the movie as well as release date.\nReviews: Reviews are saved to local storage so users can see what movies they have reviewed.\nSharing: Users can share the movie with all contacts who have emails!</string>
+    <string name="dev">Developer Notes</string>
+    <string name="devText">Some of the movies do not have trailers provided by the API. When their poster is clicked, the youtube fragment will not open. Also, some movies do not have related films. For these, no movies will display in the scroll area at the bottom.</string>
+    <string name="info">Movie Info</string>
+    <string name="searchHint">Search Movies Here</string>
+    <string name="search">Search</string>
+    <string name="help">Help</string>
+    <string name="reviews">Your Reviews</string>
+    <string name="review">Review</string>
+    <string name="share">Share</string>
+    <string name="web">Enter Website</string>
+    <string name="related">Related Movies</string>
+    <string name="cast">Cast</string>
+    <string name="enterrev">Enter Your Review</string>
+    <string name="submit">Submit</string>
+
+
+
 </resources>

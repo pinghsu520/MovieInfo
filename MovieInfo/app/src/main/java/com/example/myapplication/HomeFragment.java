@@ -86,12 +86,21 @@ public class HomeFragment extends Fragment {
         myView =  inflater.inflate(R.layout.fragment_home, container, false);
         //setting the onclick of the search button
         Button searchButton = myView.findViewById(R.id.search_button);
+        Button helpButton = myView.findViewById(R.id.help);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onSearchPressed();
             }
         });
+
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onHelpPressed();
+            }
+        });
+
 
         context = myView.getContext();
 
@@ -152,19 +161,33 @@ public class HomeFragment extends Fragment {
         String query = searchText.getText().toString();
 
         //adding the querey to the bundle
-        Bundle bundle = new Bundle();
-        bundle.putString("search", query);
+        System.out.println("query:");
+        System.out.println(query);
+        if (query.length() > 0){
+            Bundle bundle = new Bundle();
+            bundle.putString("search", query);
 
-        //creating a fragment and adding the bundle to it
-        SearchFragment search = new SearchFragment();
-        search.setArguments(bundle);
+            //creating a fragment and adding the bundle to it
+            SearchFragment search = new SearchFragment();
+            search.setArguments(bundle);
 
+            FragmentTransaction fTransaction = MainActivity.manager.beginTransaction();
+            //adding it so that it will show
+            fTransaction.replace(R.id.main_layout, search).addToBackStack(null);
+            fTransaction.commit();
+        }
+
+    }
+
+    public void onHelpPressed(){
+        HelpFragment help = new HelpFragment();
         FragmentTransaction fTransaction = MainActivity.manager.beginTransaction();
         Helpers.transition(this, search);
 
         //adding it so that it will show
-        fTransaction.replace(R.id.main_layout, search).addToBackStack(null);
+        fTransaction.replace(R.id.main_layout, help).addToBackStack(null);
         fTransaction.commit();
+
     }
 
     /**
