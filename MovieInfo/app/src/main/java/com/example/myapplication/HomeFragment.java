@@ -182,7 +182,7 @@ public class HomeFragment extends Fragment {
     public void onHelpPressed(){
         HelpFragment help = new HelpFragment();
         FragmentTransaction fTransaction = MainActivity.manager.beginTransaction();
-        Helpers.transition(this, search);
+        Helpers.transition(this, help);
 
         //adding it so that it will show
         fTransaction.replace(R.id.main_layout, help).addToBackStack(null);
