@@ -48,6 +48,7 @@ public class SearchFragment extends Fragment {
     private View myView;
 
     private FragmentManager manager;
+    private SearchFragment itself = this;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -155,6 +156,7 @@ public class SearchFragment extends Fragment {
                         movieFrag.setArguments(bundle);
                         //starting the new fragment
                         FragmentTransaction newTransaction =  manager.beginTransaction();
+                        Helpers.transition(itself, movieFrag);
                         newTransaction.replace(R.id.main_layout, movieFrag).addToBackStack(null);
                         newTransaction.commit();
                     }

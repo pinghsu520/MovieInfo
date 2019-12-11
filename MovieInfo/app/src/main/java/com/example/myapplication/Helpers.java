@@ -11,7 +11,12 @@ package com.example.myapplication;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.transition.Fade;
+import android.transition.TransitionInflater;
+import android.transition.TransitionSet;
 import android.util.Log;
+
+import androidx.fragment.app.Fragment;
 
 import org.json.JSONObject;
 
@@ -77,6 +82,32 @@ public class Helpers {
 
         //returning the new object. Null if anything bad happens.
         return jsonObject;
+    }
+
+
+
+    public static void transition(Fragment fromView, Fragment toView){
+
+        int FADE_DEFAULT_TIME = 500;
+        int MOVE_DEFAULT_TIME = 500;
+
+        //fadeing current fragment out
+        Fade exitFade = new Fade();
+        exitFade.setDuration(FADE_DEFAULT_TIME);
+        fromView.setExitTransition(exitFade);
+
+        //fading together
+        TransitionSet enterTransitionSet = new TransitionSet();
+        enterTransitionSet.addTransition(TransitionInflater.from(fromView.getContext()).inflateTransition(android.R.transition.move));
+        enterTransitionSet.setDuration(MOVE_DEFAULT_TIME);
+        enterTransitionSet.setStartDelay(FADE_DEFAULT_TIME);
+        toView.setSharedElementEnterTransition(enterTransitionSet);
+
+        //fading new in
+        Fade enterFade = new Fade();
+        enterFade.setStartDelay(MOVE_DEFAULT_TIME + FADE_DEFAULT_TIME);
+        enterFade.setDuration(FADE_DEFAULT_TIME);
+        toView.setEnterTransition(enterFade);
     }
 
 

@@ -64,6 +64,7 @@ public class MovieFragment extends Fragment {
     private TextView release;
     private TextView overview;
     private String id;
+    private MovieFragment itself = this;
 
     private View myView;
 
@@ -176,6 +177,7 @@ public class MovieFragment extends Fragment {
         //setting the fragment to contain the bundle and showing the fragment
         contact.setArguments(bundle);
         FragmentTransaction fTransaction = manager.beginTransaction();
+        Helpers.transition(this, contact);
         fTransaction.replace(R.id.main_layout, contact).addToBackStack(null);
         fTransaction.commit();
     }
@@ -194,6 +196,7 @@ public class MovieFragment extends Fragment {
         //settting the fragment to have the bundle and showing it
         reviews.setArguments(bundle);
         FragmentTransaction fTransaction = manager.beginTransaction();
+        Helpers.transition(this, reviews);
         fTransaction.replace(R.id.main_layout, reviews).addToBackStack(null);
         fTransaction.commit();
 
@@ -335,7 +338,7 @@ public class MovieFragment extends Fragment {
         protected void onPostExecute(JSONObject jsonObject) {
                 //sets the image adapter
                 ViewPager castView = myView.findViewById(R.id.cast);
-                ImageAdapter castAdapter = new ImageAdapter(myView.getContext(), castPosters, castIds, "cast");
+                ImageAdapter castAdapter = new ImageAdapter(itself, castPosters, castIds, "cast");
                 castView.setAdapter(castAdapter);
         }
 
@@ -424,7 +427,7 @@ public class MovieFragment extends Fragment {
         protected void onPostExecute(JSONObject jsonObject) {
                 //setting the image adapter
                 ViewPager view = myView.findViewById(R.id.related);
-                ImageAdapter imageAdapter = new ImageAdapter(myView.getContext() ,relatedMoviePosters, relatedIds, "movie");
+                ImageAdapter imageAdapter = new ImageAdapter(itself ,relatedMoviePosters, relatedIds, "movie");
                 view.setAdapter(imageAdapter);
         }
     }
