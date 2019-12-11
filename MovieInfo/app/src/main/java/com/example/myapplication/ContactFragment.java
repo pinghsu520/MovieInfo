@@ -25,6 +25,11 @@ import com.example.myapplication.R;
 
 import java.util.ArrayList;
 
+/**
+ * The purpose of this class is to display a list of contacts for the user to select. The user can
+ * select a movie fragment which will thne share to the user he/she selects. The class uses fragments
+ * and inflators as well as ArrayLists coupled wiht adapters.
+ */
 
 public class ContactFragment extends Fragment {
 

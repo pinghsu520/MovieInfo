@@ -53,7 +53,9 @@ import java.util.HashMap;
 import static android.content.ContentValues.TAG;
 
 /**
- * A simple {@link Fragment} subclass.
+ *  The purpose of this movie fragment is to display all movie information. This is used in
+ *  fragments and displays all Movie object information including parsing through the JSON arrays
+ *  that were fetched.
  */
 public class MovieFragment extends Fragment {
 

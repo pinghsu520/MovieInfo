@@ -55,7 +55,10 @@ import java.util.ArrayList;
 
 import static android.content.ContentValues.TAG;
 
-
+/*
+The HomeFragment is the initial fragment that is seen by the user and contains all the initial
+displayed information.
+ */
 
 public class HomeFragment extends Fragment {
 

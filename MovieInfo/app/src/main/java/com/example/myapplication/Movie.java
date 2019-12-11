@@ -8,6 +8,10 @@ package com.example.myapplication;
 
 import android.graphics.Bitmap;
 
+/*
+The purpose of this file is to grab all information necessary for each movie and assign it to a Movie
+Object to be used in other files.
+ */
 public class Movie {
     private String title = "";
     private double popularity;
