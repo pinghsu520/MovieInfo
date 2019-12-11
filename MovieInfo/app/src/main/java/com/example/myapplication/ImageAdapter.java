@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.solver.widgets.Helper;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
 
@@ -34,9 +36,11 @@ public class ImageAdapter extends PagerAdapter {
     private ArrayList<Bitmap> images;
     private ArrayList<Integer> ids;
     private String type;
+    private Fragment fromFragment;
 
-    public ImageAdapter(Context context, ArrayList<Bitmap> images, ArrayList<Integer> ids, String type){
-        this.mContext = context;
+    public ImageAdapter(Fragment fromFragment, ArrayList<Bitmap> images, ArrayList<Integer> ids, String type){
+        this.fromFragment = fromFragment;
+        this.mContext = fromFragment.getContext();
         this.ids = ids;
         this.images = images;
         this.type = type;
@@ -75,7 +79,9 @@ public class ImageAdapter extends PagerAdapter {
                     //creating a new movie fragment
                     MovieFragment movie = new MovieFragment();
                     movie.setArguments(bundle);
+
                     FragmentTransaction fTransaction = MainActivity.manager.beginTransaction();
+                    Helpers.transition(fromFragment, movie);
                     fTransaction.replace(R.id.main_layout, movie).addToBackStack(null);
                     fTransaction.commit();
                 }

@@ -14,11 +14,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.constraintlayout.solver.widgets.Helper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import android.transition.Fade;
+import android.transition.TransitionInflater;
+import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +61,7 @@ public class HomeFragment extends Fragment {
 
     private View myView;
     private  Context context;
+    private HomeFragment itself = this;
 
     // These two arrays are for the poster urls and the poster bitmaps
     private ArrayList<String> posterUrls = new ArrayList<String>();
@@ -155,6 +160,8 @@ public class HomeFragment extends Fragment {
         search.setArguments(bundle);
 
         FragmentTransaction fTransaction = MainActivity.manager.beginTransaction();
+        Helpers.transition(this, search);
+
         //adding it so that it will show
         fTransaction.replace(R.id.main_layout, search).addToBackStack(null);
         fTransaction.commit();
@@ -216,7 +223,7 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(JSONObject jsonObject) {
             ViewPager view = myView.findViewById(R.id.newMovies);
             Context context = myView.getContext();
-            ImageAdapter imageAdapter = new ImageAdapter(context ,posters, movieIds, "movie");
+            ImageAdapter imageAdapter = new ImageAdapter(itself ,posters, movieIds, "movie");
             view.setAdapter(imageAdapter);
 
         }

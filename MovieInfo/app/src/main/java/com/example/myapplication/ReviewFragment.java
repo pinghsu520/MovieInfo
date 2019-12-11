@@ -88,6 +88,7 @@ public class ReviewFragment extends Fragment {
         MainActivity.home.addReview(review);
         userRev.setText("");
 
+        Helpers.transition(this, MainActivity.home);
         //switching fragments
         FragmentManager manager = MainActivity.manager;
         manager.beginTransaction().replace(R.id.main_layout, MainActivity.home).addToBackStack(null).commit();
