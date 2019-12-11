@@ -84,7 +84,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:layout_marginRight="5dp"
-                android:text="Review"
+                android:text="@string/review"
                 android:layout_weight="1"
                 style="@style/button"/>
 
@@ -96,7 +96,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginLeft="5dp"
-                android:text="Share"
+                android:text="@string/share"
                 android:layout_weight="1"
                 style="@style/button"/>
 
@@ -108,18 +108,32 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="5dp"
-                android:text="Enter Website!"
+                android:text="@string/web"
                 android:layout_weight="1"
                 style="@style/button"/>
         </LinearLayout>
-
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             style="@style/smallTitle"
-            android:text="Related Movies:"
+            android:text="@string/cast"
+            />
+
+        <androidx.viewpager.widget.ViewPager
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/cast"
+            android:layout_weight="3"
+            style="@style/swipezone"
+            android:layout_gravity="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            style="@style/smallTitle"
+            android:text="@string/related"
             />
 
         <androidx.viewpager.widget.ViewPager
@@ -130,20 +144,6 @@
             android:layout_gravity="center"
             style="@style/swipezone"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            style="@style/smallTitle"
-            android:text="Cast:"
-            />
 
-        <androidx.viewpager.widget.ViewPager
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/cast"
-            android:layout_weight="3"
-            style="@style/swipezone"
-            android:layout_gravity="center"/>
     </LinearLayout>
 </FrameLayout>

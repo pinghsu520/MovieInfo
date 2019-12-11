@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Movie Info"
+            android:text="@string/info"
             android:textAlignment="center"
             style="@style/title"/>
 
@@ -25,15 +25,15 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:weightSum="4"
+            android:weightSum="6"
             android:gravity="center">
 
             <EditText
                 android:id="@+id/searchText"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
-                android:layout_weight="3"
-                android:hint="Search Movie Here"
+                android:layout_weight="4"
+                android:hint="@string/searchHint"
                 style="@style/typeHere"/>
 
             <Button
@@ -41,8 +41,20 @@
                 android:layout_width="0dp"
                 android:layout_height="45dp"
                 android:layout_weight="1"
-                android:text="Search"
+                android:text="@string/search"
                 style="@style/button"/>
+
+            <Button
+                android:id="@+id/help"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:text="@string/help"
+                style="@style/button"/>
+
+
+
         </LinearLayout>
 
 
@@ -58,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Your Reviews"
+            android:text="@string/reviews"
             android:layout_marginBottom="10dp"
             android:layout_weight=".5"
             style="@style/smallTitle"/>
