@@ -3,4 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="background">#73767E</color>
+    <color name="titleText">#1A1919</color>
+    <color name="textBox">#466386</color>
+    <color name="lightyellow">#DFCE49</color>
+    <color name="muteyellow">#E7DEB6</color>
 </resources>

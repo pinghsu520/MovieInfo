@@ -9,37 +9,40 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="10">
+        android:weightSum="10"
+        style="@style/bigLayout">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:textSize="40dp"
+            android:layout_weight="1"
             android:text="Movie Info"
             android:textAlignment="center"
-            android:layout_weight="1"/>
+            style="@style/title"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="horizontal"
             android:layout_weight="1"
-            android:weightSum="4">
+            android:orientation="horizontal"
+            android:weightSum="4"
+            android:gravity="center">
 
             <EditText
                 android:id="@+id/searchText"
-                android:text=""
                 android:layout_width="0dp"
                 android:layout_height="50dp"
-                android:layout_weight="3"/>
+                android:layout_weight="3"
+                android:hint="Search Movie Here"
+                style="@style/typeHere"/>
 
             <Button
                 android:id="@+id/search_button"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:text="Search"
+                android:layout_height="45dp"
                 android:layout_weight="1"
-                />
+                android:text="Search"
+                style="@style/button"/>
         </LinearLayout>
 
 
@@ -47,29 +50,30 @@
             android:id="@+id/newMovies"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="6"
-            />
+            android:layout_weight="5.5"
+            android:baselineAligned="false"
+            style="@style/swipezone"/>
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:text="Your Reviews."
-            android:gravity="center_horizontal"
-            />
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Your Reviews"
+            android:layout_marginBottom="10dp"
+            android:layout_weight=".5"
+            style="@style/smallTitle"/>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
-            android:layout_margin="10dp"
-            >
+            android:background="@color/lightyellow">
+
             <LinearLayout
                 android:id="@+id/reviewholder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                >
-            </LinearLayout>
+                android:orientation="vertical"></LinearLayout>
         </ScrollView>
     </LinearLayout>
 </FrameLayout>

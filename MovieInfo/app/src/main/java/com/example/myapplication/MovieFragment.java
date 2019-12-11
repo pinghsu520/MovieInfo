@@ -258,13 +258,13 @@ public class MovieFragment extends Fragment {
             image = myView.findViewById(R.id.poster);
             title = myView.findViewById(R.id.title);
             //popularity = myView.findViewById(R.id.popularity);
-            //release = myView.findViewById(R.id.release);
+            release = myView.findViewById(R.id.release);
             overview = myView.findViewById(R.id.overview);
 
             image.setImageBitmap(movie.getPoster());
             title.setText(movie.getTitle());
             //popularity.setText(Double.toString(movie.getPopularity()));
-            //release.setText(movie.getReleaseDate());
+            release.setText("Release Date: " + movie.getReleaseDate());
             overview.setText(movie.getOverview());
 
                 /*
